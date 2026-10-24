@@ -115,6 +115,16 @@ figcaption{font-size:.8rem;color:var(--muted);margin-top:6px}
 .opt.bad{border-color:var(--bad);background:var(--bad-soft)}
 .opt.bad .k{color:var(--bad);font-weight:600}
 .opt.dim{opacity:.6}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.multi .k::before{content:"";display:inline-block;width:12px;height:12px;border:1.5px solid currentColor;border-radius:3px;margin-right:4px;vertical-align:-1px}
+.opt.multi.sel .k::before{background:var(--accent);border-color:var(--accent);box-shadow:inset 0 0 0 2px var(--card)}
+.opt.multi{grid-template-columns:40px minmax(0,1fr)}
+.opt.miss{border:1px dashed #C77700;background:color-mix(in oklab,#C77700 10%,var(--card))}
+.opt.miss .k{color:#C77700;font-weight:600}
+.opt .fl{font-size:.72rem;font-weight:600;color:#C77700;margin-left:6px;text-transform:uppercase;letter-spacing:.04em}
+.mhint{padding-left:30px;font-size:.82rem;color:var(--muted);margin:-2px 0 2px}
+.conf{margin-left:30px;align-self:flex-start}
+.conf[disabled]{opacity:.5;cursor:default}
 .exp{margin-left:30px;font-size:.9rem;border-radius:8px;padding:9px 12px;background:var(--soft);max-width:78ch}
 .exp b{display:block;margin-bottom:2px}
 .exp.ok b{color:var(--ok)} .exp.bad b{color:var(--bad)}
@@ -139,7 +149,6 @@ figcaption{font-size:.8rem;color:var(--muted);margin-top:6px}
 </style>
 </head>
 <body>
-
 
 <header class="top"><div class="top-in">
   <div class="brand"><h1>Casos de Medicina Familiar</h1><span>Práctica con el cuadernillo 2026 · asma según GINA 2026 · ITU según IDSA 2025</span></div>
@@ -174,6 +183,8 @@ const CASES=[];
 function C(s,t,v,q,img){const id=CASES.length;q.forEach((x,i)=>x.key=id+"-"+i);CASES.push({s,t,v,q,img,id,nd:0});}
 function D(i,arr){const c=CASES[i];if(!c)return;arr.forEach((x,j)=>x.key=i+"-d"+(c.nd+j));c.q.splice(c.nd,0,...arr);c.nd+=arr.length;}
 function Q(type,text,ok,w1,w2,w3,exp,info){return {type,text,opts:[ok,w1,w2,w3],exp,info};}
+const MULTI={};
+function M(k,ok,wr){MULTI[k]={ok:ok.split("|"),wr:wr?wr.split("|"):[]};}
 function X(i,v,ev){const c=CASES[i];if(!c)return;c.v=v;Object.keys(ev||{}).forEach(k=>{const q=c.q[k-1];if(q)q.info=ev[k];});}
 const IMGS={
 ecg(){
@@ -2620,6 +2631,290 @@ Q("C","Cetirizina 6-12 años: 5 mg c/12 h. ¿Cuántas gotas (0,5 mg/gota)?","10 
 Q("C","Ibuprofeno 10 mg/kg al 4 % para el dolor: ¿cuántos ml?","7,5 ml","15 ml","3 ml","30 ml","10 × 30 = 300 mg ÷ 40 = 7,5 ml (máx. 600 mg/dosis)."),
 Q("T","¿Qué dosis máxima por toma de ibuprofeno figura en el cuadernillo para niños?","600 mg","200 mg","1200 mg","No tiene","Ibuprofeno 10 mg/kg (máx. 600 mg) c/6 h, ≤ 4 dosis/día.")
 ]);
+// Conversión a selección múltiple (más de una correcta). M(clave, "correctas separadas por |", "incorrectas separadas por |" o "" para usar las originales)
+M("0-d0","Buen progreso de peso|Ausencia de fiebre y vómitos|Que no rechace el alimento|Calma entre los episodios","Que llore más de tarde|Que encoja las piernas durante el llanto");
+M("0-d1","Fiebre|Fontanela abombada|Hernias|Otitis|Torniquete de pelo en dedos o pene","Reflejo rotuliano|Fondo de ojo de rutina");
+M("1-d1","Que sea reductible|Que sea indolora|Que no haya cambios de coloración de la piel","Que mida menos que una moneda|Que transilumine");
+M("2-d0","Fractura previa por trauma leve|Tabaquismo|Baja ingesta de calcio|Menopausia precoz|Uso de corticoides","Color de ojos|Número de hijos varones");
+M("2-d1","Pérdida de talla|Aumento de la cifosis dorsal","Hipertensión|Soplo carotídeo|Edemas");
+M("3-d0","Circunstancias de la caída|Pródromos o pérdida de conocimiento|Medicación que toma|Lugar donde ocurrió","Si se caía de chico|Qué zapatos usaba de joven");
+M("3-d1","TA acostado y de pie|Marcha y equilibrio|Visión|Examen neurológico","Palpación tiroidea|Fondo de ojo de rutina");
+M("3-d2","TSH|Vitamina B12|Función renal y glucemia|Hemograma","Amilasa|Troponina|PSA");
+M("4-d0","Disuria|Polaquiuria|Fiebre|Dolor lumbar","Náuseas matinales|Antojos");
+M("5-d0","Tratamientos previos para sífilis|Lesiones genitales previas|Exantemas previos","Si tuvo varicela|Su grupo sanguíneo");
+M("5-d1","Chancro|Exantema palmoplantar|Condilomas planos|Adenopatías","Soplos cardíacos|Hiperreflexia|Bocio");
+M("5-d2","Prueba treponémica|VIH|HBsAg|Estudio de la pareja","PCR para HPV|Ecografía abdominal");
+M("6-d0","Color, olor y consistencia del flujo|Prurito vulvar|Síntomas de la pareja","Edad de la menarca|Número de embarazos");
+M("7-d0","Pareja nueva sin preservativo|Flujo anormal|Dispareunia|Dolor pelviano bajo","Constipación crónica|Cefalea");
+M("7-d1","Dolor a la movilización cervical|Dolor uterino|Dolor anexial","Útero en retroversión|Cuello cerrado");
+M("7-d2","Test de embarazo|Ecografía transvaginal si se sospecha absceso","Colonoscopia|TC de cerebro|Espirometría");
+M("8-d0","Técnica de prendida|Frecuencia de las tomas|Vaciado de la mama","Si toma mate|Si usó DIU");
+M("9-d0","Cáncer de mama|TVP o TEP|Enfermedad coronaria o ACV|Hepatopatía activa|Sangrado no estudiado","Si tiene hijos varones|Si usa lentes");
+M("9-d1","TA|IMC|Examen mamario|Examen ginecológico","Reflejos|Fondo de ojo");
+M("10-d0","Cantidad de toallitas o tampones por día|Coágulos|Duración del sangrado|Síntomas de anemia","Si le gusta el chocolate|Si tiene várices");
+M("10-d1","Hipotensión|Taquicardia|Ortostatismo","Acné|Hirsutismo|Palidez leve aislada con signos vitales normales");
+M("10-d2","Test de embarazo|Hemograma|Ecografía transvaginal","Colonoscopia|Rx de pelvis");
+M("11-d0","Tos|Rinorrea|Conjuntivitis","Fiebre|Odinofagia|Adenopatías cervicales dolorosas");
+M("11-d1","Exudado amigdalino|Adenopatías cervicales anteriores dolorosas|Fiebre|Ausencia de tos","Adenopatías occipitales|Esplenomegalia|Exantema vesicular");
+M("12-d0","Episodios previos de OMA|Uso reciente de antibióticos","Si gatea|Si duerme con luz");
+M("13-d0","Edad ≥ 65 años|Comorbilidades (EPOC, DBT)|Tiempo de evolución de los síntomas","Si le gusta el frío|Si tiene mascotas");
+M("13-d1","Taquipnea|Desaturación|Rales localizados","Mialgias|Congestión nasal");
+M("15-d0","Dolor intenso|Disminución de la visión|Fotofobia","Picazón|Lagañas a la mañana");
+M("15-d1","Pupila midriática arreflexiva|Córnea turbia|Dolor ocular intenso","Hiperemia periférica con secreción|Folículos conjuntivales");
+M("16-d0","Exposición a polvo o ácaros|Mascotas|Estacionalidad|Síntomas en el dormitorio","Si come pescado|Antecedentes quirúrgicos");
+M("17-d0","Síntomas diurnos|Despertares nocturnos|Uso de rescate|Limitación de la actividad","Edad del diagnóstico|Antecedentes quirúrgicos");
+M("18-d0","Internaciones en UTI o intubación|Uso reciente de corticoides orales|Más de 1 envase de SABA por mes","Edad de la menarca|Si practica deportes");
+M("18-d1","Somnolencia|Confusión|Cianosis|Tórax silente","Sibilancias|FR 22|Tos");
+M("18-d2","PEF (o VEF1)|Saturación de O2","Hemograma|Gases arteriales de rutina|Rx de tórax de rutina");
+M("19-d0","Síntomas diurnos|Tos nocturna|Uso de rescate|Limitación al jugar","Si mira TV|Si come verduras");
+M("20-d0","Prematurez|Cardiopatía congénita|Enfermedad pulmonar crónica|Inmunodeficiencia|Edad menor de 3 meses","Tener hermanos mayores|Usar chupete");
+M("20-d1","Frecuencia respiratoria|Sibilancias|Cianosis|Retracción (tiraje)","Fiebre|Diuresis|Fontanela");
+M("21-d0","Dificultad para alimentarse|Apneas|Vómitos|Estado general","Si va al jardín|Si mira TV");
+M("21-d1","Soplo tubario|Rales crepitantes localizados","Sibilancias difusas|Estridor");
+M("22-d0","Confusión|FR ≥ 30|TA baja|Edad ≥ 65","Tos|Dolor pleurítico|Esputo herrumbroso");
+M("22-d1","Matidez|Vibraciones vocales aumentadas|Rales crepitantes|Soplo tubario","Hiperresonancia|Sibilancias difusas");
+M("23-d1","Tórax en tonel|Espiración prolongada|Murmullo vesicular disminuido","Soplo tubario|Crepitantes finos de velcro|Frote pleural");
+M("24-d0","Tos de más de 2 semanas|Fiebre vespertina|Sudoración nocturna|Pérdida de peso","Rinorrea|Estornudos|Prurito");
+M("24-d2","Baciloscopia de esputo|Cultivo de esputo|Ofrecer test de VIH","PPD como único estudio|Hemograma como confirmación");
+M("25-d1","Espacios interdigitales|Muñecas|Axilas|Cintura|Genitales","Cuero cabelludo y cara en adultos|Espalda alta");
+M("27-d0","Heridas|Micosis interdigital|Insuficiencia venosa|Linfedema","Viajes|Alergias alimentarias");
+M("29-d0","Irregularidad menstrual|Hirsutismo|Caída de cabello","Si come chocolate|Cuántas horas duerme");
+M("29-d1","Comedones|Pápulas y pústulas|Nódulos y quistes|Cicatrices","Color de piel|Tamaño de los poros");
+M("30-d0","Calzado oclusivo (botas de goma)|Humedad","Trabajar sentado|Trabajar de noche");
+M("30-d1","Monofilamento|Pulsos pedios|Inspección de fisuras y úlceras","Reflejos rotulianos|Palpación abdominal");
+M("31-d0","Inicio en la infancia|Curso crónico-recurrente|Atopia personal o familiar","Fiebre alta|Viajes");
+M("32-d0","Consumo de sal|Alcohol|Actividad física|Tabaco|Fármacos que suben la TA (AINE)","Si le gusta el fútbol|Hora en que se despierta");
+M("32-d1","Sentado tras 5 min de reposo|Brazo a la altura del corazón|Manguito adecuado|En ambos brazos la primera vez","De pie apenas llega|Sobre la ropa|Una sola toma alcanza");
+M("32-d2","Creatinina|Orina (proteinuria)|ECG|Glucemia y lípidos|Potasio","TC de cerebro|Ecocardiograma como único estudio");
+M("33-d2","Potasio|Sodio|Glucemia|Ácido úrico","Amilasa|TSH");
+M("34-d0","Poliuria|Polidipsia|Polifagia|Pérdida de peso","Cefalea|Tos");
+M("34-d1","Inspección de los pies|Pulsos pedios|Sensibilidad con monofilamento","Palpación de ganglios|Medir el largo del pie");
+M("34-d2","Fondo de ojo|Albuminuria|Creatinina (FGe)|Perfil lipídico","Ecografía abdominal|TC de cerebro");
+M("35-d0","Hipoglucemias previas|Adherencia|Dieta|Posibilidad de automonitoreo|Quién puede ayudarlo","Si tiene perro|Si hace siesta");
+M("36-d1","Xantomas tendinosos|Arco corneal precoz","Acantosis|Hepatomegalia|Bocio");
+M("36-d2","Perfil lipídico|Transaminasas|Glucemia","TSH como único estudio|Hemograma como único estudio");
+M("37-d1","TA|Peso|FC","Agudeza visual|Reflejos|Pulsos pedios");
+M("38-d0","Atracones|Picoteo|Bebidas azucaradas|Horarios de comida|Comidas fuera de casa","Si come pescado los viernes|Su comida favorita de chica");
+M("38-d1","Peso|Talla|IMC|Circunferencia de cintura","Perímetro cefálico|Pliegue del tríceps como única medida");
+M("38-d2","Glucemia o HbA1c|Perfil lipídico|Hepatograma|TSH","Cortisol libre urinario a todos|Hemograma como único estudio");
+M("39-d0","Dolor opresivo retroesternal|Irradiación a brazo o mandíbula|Sudoración|Duración mayor de 20 minutos","Punzante que aumenta al palpar|Que cambia con la respiración|De segundos de duración");
+M("39-d1","Signos de IC (crepitantes, R3)|Hipotensión|Soplos nuevos","Reflejos|Bocio|Esplenomegalia");
+M("40-d0","Disnea según el esfuerzo (CF NYHA)|Ortopnea|Disnea paroxística nocturna","Dolor lumbar|Prurito");
+M("40-d1","Ingurgitación yugular|Crepitantes|Edemas|Aumento de peso","Ictericia|Adenopatías");
+M("41-d0","Prótesis valvular|Endocarditis previa|Cardiopatía congénita cianótica no reparada","HTA|Soplo inocente|Extrasístoles aisladas");
+M("42-d0","Número de deposiciones|Número de vómitos|Diuresis|Tolerancia oral","Si va a natación|Si tiene hermanos");
+M("43-d1","Taquicardia|Ortostatismo|Mucosas secas|Oliguria","Ictericia|Bocio|Petequias");
+M("43-d2","Diarrea con sangre|Fiebre alta|Más de 7 días de evolución|Inmunocomprometidos","Toda diarrea aguda|Sólo en niños");
+M("44-d0","Pérdida de peso|Disfagia|Vómitos persistentes|Sangrado|Anemia","Pirosis ocasional|Eructos");
+M("44-d1","Palidez|Defensa abdominal|Masa epigástrica","Dolor leve epigástrico|Lengua saburral");
+M("45-d0","Sangre en heces|Pérdida de peso|Síntomas nocturnos|Inicio después de los 50 años|Antecedente familiar de CCR","Distensión|Alivio al defecar|Empeoramiento con estrés");
+M("45-d2","Hemograma|PCR|Anti-transglutaminasa|TSH|Parasitológico","Colonoscopia a todas|TC de abdomen");
+M("46-d1","Excoriaciones perianales|Gusanos visibles","Fisura con papila centinela|Fístula");
+M("47-d0","Opioides|Hierro|Calcio|Anticolinérgicos|Antiácidos con aluminio","Paracetamol|Antihistamínicos tópicos");
+M("47-d1","Inspección anal|Tacto rectal si el dolor lo permite","Fondo de ojo|Palpación tiroidea");
+M("48-d0","Anemia|Aftas|Cansancio|Infertilidad|Osteoporosis","Cefalea tensional|Rinitis|Acné");
+M("48-d1","Palidez|Bajo peso|Glositis|Edemas","Bocio|Xantomas");
+M("49-d0","Fiebre y escalofríos|Dolor lumbar|Flujo|Prurito vulvar","Cefalea|Tos");
+M("50-d0","Urocultivos previos con resistencias|Uso de fluoroquinolonas en los últimos 12 meses","Si toma agua de la canilla|Uso de ACO");
+M("50-d1","Estado mental|Frecuencia respiratoria|TA|Signos de hipoperfusión","Reflejos|Agudeza visual");
+M("51-d0","Síntomas urinarios|ITU previas|Constipación|Control de esfínteres","Si duerme con la luz|Si tiene mascotas");
+M("51-d1","Búsqueda de otro foco (ORL, respiratorio)|Genitales|Abdomen y puñopercusión|Estado de hidratación","Tanner|Fondo de ojo");
+M("52-d0","Número de parejas|Uso de preservativo|Prácticas sexuales|Síntomas de las parejas","Religión|Si tiene novia");
+M("52-d1","Pene (úlceras)|Testículos y epidídimos|Región inguinal|Piel","Fondo de ojo|Tiroides");
+M("53-d1","Próstata aumentada|Superficie lisa|Consistencia elástica|Surco conservado","Nódulo pétreo|Próstata caliente y dolorosa|Surco borrado");
+M("53-d2","Orina completa|Creatinina|PSA con consejería","TC de pelvis|Cistoscopia a todos");
+M("54-d0","Exceso de leche de vaca|Baja ingesta de carnes","Consumo de frutas|Lactancia exclusiva hasta los 6 meses");
+M("54-d1","Hepatoesplenomegalia|Adenopatías|Ictericia|Petequias","Fontanela|Reflejos");
+M("56-d0","Dieta vegana|Alcohol|Fármacos (metformina, IBP)|Cirugías gástricas","Tabaquismo pasivo|Asma");
+M("56-d1","Disminución de la sensibilidad vibratoria|Disminución de la propiocepción","Temblor de reposo|Ptosis");
+M("57-d0","Fiebre|Pérdida de peso|Cáncer previo|Trauma mayor|Déficit neurológico o trastorno esfinteriano","Dolor al agacharse|Contractura|Trabajo físico");
+M("58-d0","Alcohol|Comidas ricas en purinas|Diuréticos|AAS","Lácteos|Ejercicio");
+M("59-d0","Dolor mecánico|Peor con el uso|Rigidez matinal menor de 30 minutos","Rigidez matinal mayor de 1 hora|Dolor nocturno con fiebre|Dolor migratorio");
+M("59-d1","Crepitación|Deformidad en varo|Osteofitos palpables","Derrame caliente y eritematoso|Tumoración pulsátil");
+M("59-d2","Disminución del espacio articular|Osteofitos|Esclerosis subcondral","Erosiones marginales|Osteopenia en banda");
+M("61-d0","Rigidez matinal mayor de 1 hora|Afectación simétrica|Compromiso de pequeñas articulaciones","Dolor sólo al final del día|Dolor de una rodilla tras un trauma");
+M("61-d1","Sinovitis de MCF|Sinovitis de IFP|Distribución simétrica","Nódulos de Heberden|Tofos|Dedos en salchicha");
+M("61-d2","Hemograma|Hepatograma|Función renal|Serologías de hepatitis","TSH como único estudio|VSG como único estudio");
+M("62-d0","Inicio súbito|Cambio de patrón|Inicio después de los 50 años|Déficit neurológico|Fiebre o empeoramiento con Valsalva","Náuseas|Fotofobia|Antecedente familiar de migraña");
+M("62-d1","Examen neurológico completo|Fondo de ojo","Otoscopia|Palpación tiroidea");
+M("63-d0","Duración de segundos|Desencadenado por cambios de posición","Horas con hipoacusia|Días continuos|Minutos con déficit focal");
+M("63-d1","Latencia|Fatigabilidad|Componente torsional","Vertical puro sin fatiga|Cambia de dirección con la mirada");
+M("64-d0","Antipsicóticos|Metoclopramida|Flunarizina|Cinarizina","Paracetamol|Losartán|Omeprazol");
+M("64-d1","Temblor de reposo|Bradicinesia|Rigidez","Ataxia|Fasciculaciones|Corea");
+M("65-d0","Hierro|Calcio|IBP|Antiácidos","Paracetamol|Antihistamínicos");
+M("65-d1","Bradicardia|Piel seca|Reflejos con relajación lenta","Taquicardia y temblor|Exoftalmos|Piel húmeda");
+M("66-d0","Palpitaciones|Temblor|Pérdida de peso|Intolerancia al calor|Diarrea","Frío|Aumento de peso|Somnolencia");
+M("66-d1","Bocio difuso|Soplo tiroideo|Oftalmopatía","Nódulo único duro|Tiroides dolorosa");
+M("67-d0","Ideación suicida|Planes|Intentos previos","Si le gusta leer|Su signo zodiacal");
+M("67-d2","TSH|Hemograma","TC de cerebro|EEG");
+M("68-d0","Cafeína|Energizantes|Drogas estimulantes","Agua|Frutas");
+M("68-d1","Signos vitales|SatO2|Examen cardiopulmonar","Fondo de ojo|Reflejos osteotendinosos como único examen");
+M("68-d2","ECG|Glucemia|TSH según la clínica","TC de tórax|Ecocardiograma de rutina");
+M("69-d0","Síntomas depresivos o ansiosos|Ronquidos y apneas|Dolor|Fármacos o cafeína","Si sueña|Si duerme con medias");
+M("70-d0","Residencia o viaje a zona con circulación de dengue|Casos en el entorno","Contacto con aves|Consumo de pescado crudo");
+M("70-d1","TA acostado y de pie|Prueba del lazo|Hepatomegalia|Signos de fuga plasmática","Reflejos|Otoscopia");
+M("70-d2","Hematocrito|Plaquetas","Amilasa|TSH");
+M("71-d0","Contacto con agua o barro de inundación|Heridas en la piel|Exposición a roedores","Viajes en avión|Picaduras de mosquito");
+M("71-d1","Sufusión conjuntival|Dolor en pantorrillas","Exantema vesicular|Adenopatías generalizadas");
+M("71-d2","Creatinina|Bilirrubina|Plaquetas|Orina","TSH|Amilasa");
+M("72-d0","Si el animal es identificable y observable|Su estado de salud y vacunación|Si el ataque fue provocado","Su raza|Su nombre");
+M("72-d1","Profundidad|Compromiso tendinoso, articular u óseo|Movilidad y sensibilidad","El color de la uña|Reflejos");
+M("72-d2","Sospecha de fractura|Compromiso óseo o articular|Cuerpo extraño (diente)","Toda mordedura|Sólo en niños");
+M("73-d0","Fuente de agua y alimentos|Otros casos en el centro|Sangre en heces|Fiebre","Su comida favorita|Antecedentes quirúrgicos");
+M("73-d1","Estado de conciencia|Sed|Ojos y mucosas|Pliegue|Relleno capilar","Reflejos|Peso de hace un año");
+M("73-d2","Diarrea con sangre|Fiebre alta|Brotes|Cuadros severos","Toda diarrea|Sólo en adultos");
+M("74-d0","Región lumbosacra (fositas, mechones)|Examen neurológico de miembros inferiores|Globo vesical","Otoscopia|Fondo de ojo");
+M("76-d0","Ronquido|Pausas respiratorias|Sueño inquieto|Somnolencia diurna","Si sueña|Si tiene miedo a la oscuridad");
+M("77-d0","Tiempo de evolución de la lesión|Exantemas o lesiones previas","Grupo sanguíneo|Hábitos alimentarios");
+M("77-d1","Úlcera única|Indolora|Base indurada","Múltiples vesículas dolorosas|Bordes blandos y purulentos");
+M("77-d2","VIH|Hepatitis B|Hepatitis C","Biopsia de la úlcera|Ecografía");
+M("78-d0","Tolerancia oral|Número de vómitos|Diuresis|Pérdida de peso","Si tiene antojos|Si trabaja");
+M("78-d1","Mucosas secas|Taquicardia|Hipotensión ortostática|Pérdida de peso","Edemas|Ictericia");
+M("78-d2","Cetonuria|Alteraciones electrolíticas","Hipercalcemia|Anemia severa");
+M("79-d0","Localización palmoplantar|Predominio nocturno|3er trimestre|Sin lesiones primarias","Vesículas|Habones");
+// Conversión a selección múltiple — segunda parte
+M("79-d1","Buscar lesiones primarias (descartar dermatosis)|Ictericia|Bienestar fetal","Reflejos|Bocio");
+M("80-d0","Embarazos previos|Abortos|Profilaxis anti-D recibida|Transfusiones","Si tiene várices|Uso de ACO");
+M("81-d0","Patrón menstrual desde la menarca|Hirsutismo|Acné|Cambios de peso","Si tiene caries|Si hace siesta");
+M("81-d2","Test de embarazo|TSH|Prolactina","Cortisol a todas|Hemograma como único estudio");
+M("82-d0","Natación|Uso de hisopos","Rinitis|Asma|Uso de anteojos");
+M("83-d1","Adenopatías cervicales posteriores|Esplenomegalia","Exudado amigdalino|Fiebre|Odinofagia");
+M("83-d2","Linfocitosis con linfocitos atípicos|Transaminasas elevadas|Monotest positivo","Neutrofilia|Eosinofilia");
+M("84-d0","Fiebre persistente|Otalgia|Dificultad respiratoria|Rechazo del alimento","Si va a natación|Su comida preferida");
+M("84-d1","Otoscopia|Auscultación pulmonar|Frecuencia respiratoria","Fondo de ojo|Reflejos");
+M("85-d0","Estridor|Disnea|Dificultad para tragar","Si canta|Si toma café");
+M("85-d1","Frecuencia respiratoria|SatO2|Estridor|Fauces","Reflejos|Pulsos pedios");
+M("86-d0","Tos prolongada en convivientes|Vacunación materna con dTpa|Vacunación del niño","Si nació por cesárea|Fiebre alta");
+M("86-d1","Paroxismos de tos con cianosis|Apneas|Vómitos postusígenos","Estridor inspiratorio continuo|Rales crepitantes localizados");
+M("86-d2","Hemograma con linfocitosis|PCR de aspirado nasofaríngeo","Rx de tórax confirmatoria|Urocultivo");
+M("87-d2","Rx de tórax|Espirometría","TC de senos de entrada|Broncoscopia de rutina");
+M("88-d0","Fiebre alta persistente|Disnea|Dolor pleurítico","Tos con expectoración clara|Resfrío previo");
+M("88-d1","FC normal|FR normal|Temperatura normal|Auscultación sin focos","Roncus que cambian con la tos|Tos productiva");
+M("89-d0","Síntomas diurnos|Despertares nocturnos|Uso de rescate|Adherencia (si suspendió el inhalador)","Si tiene antojos|Peso previo al embarazo");
+M("89-d1","PEF|SatO2","Reflejos|Bocio");
+M("90-d0","Número de lesiones|Extensión|Fiebre|Casos en convivientes","Si come dulces|Si usa protector solar");
+M("91-d0","Dolor o hinchazón articular|Dactilitis|Lumbalgia inflamatoria","Si tiene caspa|Si come carne");
+M("91-d1","Pitting (pozos ungueales)|Onicólisis","Coiloniquia|Uñas en vidrio de reloj");
+M("92-d0","Infecciones recientes|Fármacos (AINE, ATB)|Alimentos nuevos","Si usa celular|Si hace frío");
+M("92-d1","Angioedema|Compromiso respiratorio|Compromiso hemodinámico","Ictericia|Hepatomegalia");
+M("93-d0","Relación con la exposición laboral|Mejoría al suspender la exposición","Fiebre|Viajes");
+M("93-d1","Eritema|Xerosis|Descamación|Fisuras en la zona de contacto","Vesículas umbilicadas|Habones");
+M("94-d0","Parestesias|Ardor nocturno|Claudicación intermitente","Cefalea|Disuria");
+M("94-d1","Monofilamento|Diapasón|Pulsos|Inspección de piel y uñas","Pulso radial|Reflejo de Babinski");
+M("95-d0","Alcohol|DBT descompensada|Hipotiroidismo|Fármacos|Obesidad","Si come fruta|Si toma agua");
+M("95-d2","Glucemia o HbA1c|TSH|Función hepática|Función renal","Amilasa de rutina|Colesterol total como único estudio");
+M("96-d1","Arañas vasculares|Eritema palmar|Ginecomastia|Ascitis|Ictericia","Bocio|Tofos");
+M("96-d2","Hepatograma y GGT|VCM|Plaquetas|Tiempo de protrombina","TSH|Amilasa");
+M("97-d0","Inicio y fin de los episodios|Regularidad|Duración|Desencadenantes|Síntomas asociados","Color de la orina|Antecedente de acné");
+M("97-d1","Pulso|TA|Soplos|Signos de hipertiroidismo","Reflejos|Otoscopia");
+M("97-d2","ECG|Hemograma|TSH|Electrolitos","TC de tórax|Cateterismo");
+M("98-d0","Várices|TVP previa|Edema","Diabetes de la madre|Viajes");
+M("98-d1","Localización maleolar interna|Poco profunda|Piel hiperpigmentada y edema|Pulsos presentes","Pulsos ausentes|Lecho pálido y muy doloroso en el dedo");
+M("99-d0","Desencadenante (bipedestación, calor)|Pródromo vegetativo|Recuperación rápida","Síncope durante el ejercicio|Antecedente familiar de muerte súbita");
+M("99-d1","TA acostado y de pie|FC acostado y de pie","Temperatura|Reflejos");
+M("100-d0","Disfagia|Odinofagia|Pérdida de peso|Sangrado|Anemia","Pirosis posprandial|Regurgitación");
+M("101-d0","Dolor en epigastrio o hipocondrio derecho|Posprandial|Duración de horas|Irradiado a la escápula","Dolor de segundos|Dolor que alivia al comer");
+M("102-d0","AINE|AAS|Anticoagulantes|Antiagregantes","Antihistamínicos|Vitaminas");
+M("103-d2","Ecografía (tipo de quiste)|Serología|Rx de tórax previa al tratamiento","Colonoscopia|EEG");
+M("105-d0","Instrumentación urológica reciente|Sonda vesical|Biopsia prostática","Antecedente de acné|Uso de anteojos");
+M("105-d2","Urocultivo|Hemocultivos si está febril","PSA en la fase aguda|Biopsia prostática");
+M("106-d0","AINE|Contrastes recientes|Fármacos de venta libre","Si come pescado|Si toma té");
+M("106-d1","TA|Edemas|Signos de sobrecarga|Fondo de ojo","Reflejos|Otoscopia");
+M("106-d2","FGe por creatinina|Albuminuria o proteinuria|Ecografía renal","TC con contraste|Biopsia a todos");
+M("107-d0","DBT|Lupus|Hepatitis B o C y VIH|Fármacos (AINE)|Neoplasias","Si hace deporte|Si toma mate");
+M("107-d1","Derrame pleural|Ascitis|Signos de trombosis","Bocio|Tofos");
+M("108-d0","Ardor|Pinchazos|Peor de noche|Distribución en calcetín","Dolor mecánico|Dolor que mejora al caminar");
+M("108-d1","Monofilamento|Sensibilidad vibratoria|Reflejos aquilianos","Signo de Lasègue|Prueba de Phalen");
+M("109-d0","Consumo de carnes|Consumo de verduras|Mate o té con las comidas","Si come caramelos|Si come pescado crudo");
+M("109-d1","Hemograma|Grupo y factor|VDRL, VIH y HBsAg|Glucemia|Urocultivo","TSH como único estudio|PSA");
+M("110-d0","Irradiación al brazo|Parestesias|Debilidad|Fiebre o trauma","Si usa celular|Si toma café");
+M("113-d0","Carácter del dolor (opresivo o pulsátil)|Náuseas|Foto y fonofobia|Efecto de la actividad","Edad de la menarca|Grupo sanguíneo");
+M("114-d0","Crisis diarias|A la misma hora|Durante semanas, con períodos libres","Cefalea continua de meses|Cefalea al toser");
+M("114-d1","Lagrimeo|Inyección conjuntival|Congestión nasal|Ptosis y miosis homolaterales","Midriasis bilateral|Rigidez de nuca");
+M("115-d0","Masticar|Hablar|Cepillarse los dientes|Viento en la cara","Menstruación|Correr");
+M("116-d0","Alimentación|Actividad física|Sueño|Alcohol|Tabaco","Si usa anteojos|Color favorito");
+M("116-d2","Glucemia en ayunas|Triglicéridos|HDL","TSH|Hemograma");
+M("117-d0","Angina|Palpitaciones|Disnea","Prurito|Disuria");
+M("118-d0","Vómitos autoinducidos|Laxantes|Diuréticos|Ejercicio excesivo","Si come frutas|Si estudia");
+M("118-d1","Frecuencia cardíaca|TA con ortostatismo|Temperatura","Reflejos|Agudeza visual");
+M("118-d2","Ionograma (K, P, Mg)|Glucemia|ECG","TC de cerebro|Hemograma como único estudio");
+M("119-d0","Ideación suicida|Planes|Intentos previos|Consumo de sustancias|Red de apoyo","Si le va bien en matemática|Si usa redes");
+M("119-d1","Profundidad|Localización|Signos de infección|Necesidad de curación","Fotografiarlas sin consentimiento|Contarlas solamente");
+M("120-d0","Respuesta a tratamientos previos|Episodios de manía","Si tiene antojos|Si le gusta el mate");
+M("120-d1","TSH|Hemograma","Cortisol|TC de cerebro");
+M("121-d0","Número de dosis antitetánicas|Fecha de la última dosis","Si tuvo varicela|Si recibió BCG");
+M("121-d1","Profundidad|Cuerpos extraños|Signos de infección|Banderas rojas","El color de la piel sana|Reflejos");
+M("122-d0","Convivientes|Vacunación de cada uno|Comorbilidades (hepatopatía, edad)","Si tienen mascotas|Si van a natación");
+M("123-d0","Descripción de la araña|Circunstancias|Tiempo transcurrido","Alergia al polen|Antecedentes quirúrgicos");
+M("123-d1","Lesión local|TA y FC|Contracturas|Signos sistémicos","Reflejos|Otoscopia");
+M("123-d2","ECG y monitoreo|CPK y función renal|Hemólisis (en loxoscelismo)","TC de cerebro|Rx como único estudio");
+M("124-d0","Trasplante o inmunosupresores|Corticoides|Neutropenia|Exposición a moho","Si toma café|Si tiene hermanos");
+M("124-d1","Frecuencia respiratoria|SatO2|Uso de músculos accesorios","Reflejos|Bocio");
+M("124-d2","TC de tórax (nódulos con halo)|Galactomanano","Rx de senos|Urocultivo");
+// Examen integrador
+M("125-0","Vivienda y servicios|Convivientes|Escolaridad|Alimentación y sueño|Antecedentes perinatales y vacunas","Inicio de relaciones sexuales|Consumo de sustancias|Orientación sexual");
+M("125-1","Peso, talla e IMC con percentiles|TA con percentil|Estadios de Tanner|Maniobra de Adams|Agudeza visual","Especuloscopia con PAP|ECG de reposo para el certificado");
+M("125-2","Explicar la confidencialidad y sus límites|Sexualidad y anticoncepción|Consumos|Ánimo e ideación suicida|Vínculos y violencia","Aclarar que después le vas a contar todo a la madre|Evitar hablar de sexualidad para no incomodarla");
+M("125-3","Vacunas de los 11 años pendientes|Agudeza visual disminuida|Caries|Tabaquismo pasivo|Riesgo de intoxicación por CO|Relaciones sin método anticonceptivo","Escoliosis|Riesgo cardiovascular alto");
+M("125-4","Vacunas HPV, dTpa y meningococo|Consejería en anticoncepción con doble protección|Oftalmología y odontología|Pautas de calefacción segura y humo de tabaco|Ofrecer volver sola","Citar a la madre para contarle sobre la anticoncepción|Postergar la anticoncepción hasta que venga con un adulto");
+M("126-2","TA|Peso, talla e IMC|Cintura|Agudeza visual|Examen bucal","Tacto rectal y PSA de rutina|Espirometría");
+M("126-3","Consumo de riesgo de alcohol|Tabaquismo en precontemplación|TA elevada a confirmar|Obesidad abdominal|Presbicia|Alto riesgo de CCR|Vacunas desactualizadas","HTA confirmada|Tabaquismo en contemplación");
+M("126-4","Colonoscopia ya|Laboratorio (glucemia, lípidos, creatinina)|VIH y VHC|Nuevas tomas de TA|Vacunas dT y HB|Consejo breve antitabaco y antialcohol","Sangre oculta en materia fecal a los 50 años|TC de tórax de baja dosis|Enalapril desde hoy");
+M("127-0","Antecedentes perinatales|Curvas de crecimiento|Vacunas|Desempeño escolar|Alimentación y pantallas|Seguridad vial|Crianza y límites","Antecedentes sexuales|Estadios de Tanner");
+M("127-2","IMC con percentil|TA con percentil|Agudeza visual|Examen bucal|Cuero cabelludo y piel","Examen genital exhaustivo|ECG");
+M("127-3","Obesidad|Sedentarismo y exceso de pantallas|Caries|Pediculosis|Castigo físico como límite|Riesgo de accidentes en la vía pública|Tabaquismo pasivo y riesgo de CO","Hipertensión arterial|Agudeza visual disminuida");
+M("127-4","Alimentación y actividad física en familia|Límite de pantallas|Odontología|Permetrina y revisar convivientes|Desaconsejar el castigo físico|Calefacción segura y casa libre de humo|Control en 30-40 días","Dieta hipocalórica estricta y metformina|Control recién en 6 meses");
+M("128-0","Número de deposiciones y vómitos|Diuresis|Tolerancia oral|Sangre en heces|Fiebre","Si va al jardín de mañana o de tarde|Si duerme con luz");
+M("128-1","Estado de conciencia|Sed|Ojos y lágrimas|Mucosas|Pliegue|Relleno capilar","Reflejos osteotendinosos|Otoscopia");
+M("129-0","Fiebre y dolor lumbar|Náuseas o vómitos|Flujo o prurito|ITU previas|ATB recientes (quinolonas)|Embarazo","Viajes al exterior|Antecedentes de asma");
+M("129-1","Signos vitales (qSOFA)|Puñopercusión|Palpación abdominal y puntos ureterales","Especuloscopia de rutina|Tacto rectal");
+M("129-2","Sedimento urinario|Urocultivo con antibiograma","TC de abdomen|Hemograma como único estudio");
+M("130-0","Síntomas cardinales|Visión borrosa|Infecciones recientes|Alimentación|Barreras para el tratamiento (trabajo, costo)","Antecedentes de varicela|Si juega al fútbol");
+M("130-1","Examen de pies (monofilamento, pulsos)|TA|Peso y cintura|Boca (periodontitis)|Fondo de ojo o derivación","Otoscopia|Tacto rectal");
+M("130-2","DBT2 de reciente diagnóstico sintomática|HTA|Obesidad|Tabaquismo|Gingivitis|Riesgo laboral de lesiones en pies|Rastreo de CCR pendiente","Prediabetes|DBT tipo 1");
+M("130-3","Metformina 500 mg con almuerzo y cena, con titulación|Laboratorio (HbA1c, lípidos, creatinina, albuminuria) y ECG|IECA o ARA II|Vacunas antitetánica, antigripal y antineumocócica|Odontología y cuidado de pies|Consejo antitabaco","Insulina basal inmediata|Glibenclamida");
+M("131-0","Inicio y evolución de los síntomas|Impacto en actividades instrumentales|Ánimo|Fármacos (BZD) y alcohol|Caídas|Apoyo familiar","Antecedentes obstétricos|Si toma mate");
+M("131-1","TA acostada y de pie|Examen neurológico|Marcha y equilibrio|Visión y audición","Tacto rectal|Fondo de ojo como único examen");
+M("131-2","TSH|Vitamina B12|Hemograma y glucemia|Función renal, calcio e ionograma","PSA|Troponina");
+M("131-3","Deterioro cognitivo compatible con demencia leve-moderada|Caídas a repetición|Uso crónico de BZD|Hipotensión ortostática|Sobrecarga del cuidador","Delirium|Demencia avanzada");
+M("131-4","Retiro gradual de la BZD|Revisar el antihipertensivo|Ejercicio y adecuación del hogar|Estimulación cognitiva y evaluar IAC|Prevenir el agotamiento del cuidador","Vitamina D para prevenir caídas|Haloperidol nocturno");
+M("132-0","Lesiones genitales previas|Síntomas generales|Uso de preservativo|Parejas","Si se lava las manos|Si come chocolate");
+M("132-1","VDRL o test rápido|Prueba treponémica|VIH|HBsAg","Biopsia de piel|Micológico");
+M("132-2","Sífilis secundaria|Pareja sin estudiar|Uso inconsistente de preservativo|Rastreo de otras ITS pendiente","Dermatitis de contacto|Pitiriasis versicolor");
+M("132-3","Penicilina G benzatínica 2,4 M UI IM única|Estudiar y tratar a la pareja|Notificación obligatoria|VDRL de control a los 3-6 meses|Mantener la confidencialidad","Tres dosis semanales de penicilina|Tratar a la pareja sólo si tiene síntomas");
+M("133-0","Frecuencia y desencadenantes de las crisis|Miedo anticipatorio y evitación|Estresores|Ánimo y sueño|Cafeína, alcohol o sustancias","Antecedentes de asma|Si usa anteojos");
+M("133-1","TA|FC|Auscultación cardíaca|Palpación tiroidea","Fondo de ojo|Tacto vaginal");
+M("133-2","Trastorno de pánico con evitación|Sobrecarga como cuidadora|Estrés familiar|Consumo alto de cafeína","Arritmia|Hipertiroidismo");
+M("133-3","Sertralina 25 mg y luego 50 mg/día|BZD sólo como puente breve|Psicoterapia con la psicóloga del equipo|Reducir la cafeína|Redistribuir el cuidado de Elba con trabajo social","Clonazepam por tiempo indefinido|Holter y ecocardiograma antes de iniciar");
+M("134-3","Acordar un tratamiento posible (receta por 3 meses, turnos fuera del horario laboral)|Trabajo social (prestaciones, garrafa)|Alerta por riesgo de CO|Espacio de escucha para Analía|Articulación con redes comunitarias|Fecha de reevaluación","Derivar a Analía a psiquiatría|Esperar a que la familia vuelva");
+M("135-1","Si fue planificado y si lo desea|Antecedentes obstétricos y personales|Consumo de sustancias|Vacunas y PAP|Situación laboral y vivienda|Violencia","Sexo deseado del bebé|Antecedentes de varicela del padre");
+M("135-2","Peso, talla e IMC|TA|Examen mamario y bucal|Examen cardiopulmonar y abdominal","Tacto rectal|Ecografía como parte del examen físico");
+M("135-3","Hemograma|Grupo, factor y Coombs indirecta|Glucemia y urocultivo|VDRL, VIH y HBsAg|Toxoplasmosis y Chagas","PSA|TSH a todas sin factores de riesgo");
+M("135-4","Explicar EG y FPP|Ácido fólico y hierro|Vacuna antigripal y dTpa desde la semana 20|Anti-D a las 28 semanas si Coombs negativa|Trabajo social por derechos laborales","dTpa recién en el puerperio|Reposo laboral absoluto");
+M("136-0","Datos perinatales y pesquisa neonatal|Curvas de crecimiento|Vacunas|Alimentación complementaria|Desarrollo|Sueño seguro|Suplemento de hierro","Antecedentes de asma del abuelo|Tanner");
+M("136-1","Peso, talla y perímetro cefálico con percentiles|Desarrollo|Caderas|Reflejo rojo y estrabismo|Boca y piel","Tanner|TA y ECG");
+M("136-2","Falta de suplemento de hierro|Té en la alimentación|Colecho con fumadores|Riesgo de caídas por escaleras|Tabaquismo pasivo","Retraso del desarrollo|Desnutrición");
+M("136-3","Hierro profiláctico 1 mg/kg/día hasta los 12 meses|Retirar el té|Sueño seguro y sin humo|Barrera en escaleras|Turno a los 12 meses para triple viral y hepatitis A","Pasar a leche de vaca entera|Colecho permitido si no fuman en la cama");
+M("137-0","Tos y rinorrea|Conjuntivitis|Vómitos|Exantema|Contactos|Antecedente de fiebre reumática","Si usa chupete|Si duerme siesta");
+M("137-1","Exudado amigdalino|Adenopatías cervicales anteriores|Petequias en paladar|Exantema escarlatiniforme|Otoscopia","Tanner|Reflejos");
+M("138-0","Carga tabáquica en paquetes/año|Exposición laboral|Exacerbaciones e internaciones|Disnea (mMRC)|Vacunas","Antecedentes obstétricos de su esposa|Si duerme siesta");
+M("138-1","SatO2 y FR|Inspección del tórax|Auscultación (espiración prolongada, sibilancias)|Signos de IC derecha","Otoscopia|Tacto rectal");
+M("138-3","EPOC grupo E|Tabaquismo activo|Vacunas pendientes|Tabaquismo pasivo en la casa (embarazada y niños)","EPOC grupo B|Indicación de oxígeno domiciliario");
+M("138-4","LABA + LAMA|Técnica inhalatoria|Cesación tabáquica|Vacunas antigripal, antineumocócica, COVID-19 y dT|Casa libre de humo","Agregar ICS por la internación (con eosinófilos 120)|LAMA solo");
+M("139-0","Parejas y fechas de contacto|Uso de preservativo|Síntomas previos de ITS|Úlceras|Síntomas de las parejas","Si toma café|Antecedentes de varicela");
+M("139-1","Secreción uretral|Úlceras en el pene|Testículos y epidídimos|Ganglios inguinales","Fondo de ojo|Tiroides");
+M("139-2","Uretritis (probable gonococo/clamidia)|Pareja embarazada expuesta|Rastreo de otras ITS pendiente|Dilema de confidencialidad","Pareja que no necesita tratamiento si está asintomática|ITU baja");
+M("139-3","Ceftriaxona IM única|Doxiciclina 100 mg c/12 h 7 días (o azitromicina 1 g)|Rastreo de VIH, VDRL y HB|Preservativo y notificación|Tratar a las parejas","Azitromicina 2 g sola|Esperar el cultivo para tratar");
+M("140-1","Antihistamínico|Paracetamol|Uñas cortas","Ibuprofeno|Aspirina|Aciclovir de rutina");
+M("140-2","Confirmar antecedente o vacuna|Pedir IgG VZV|VZIG si no es inmune, idealmente antes de 72 h|Comunicar a infectología","Vacunarla contra varicela|Aciclovir profiláctico a todos");
+M("140-3","Certificado: no concurrir hasta que todas las lesiones estén en costra|Evitar contacto con embarazadas e inmunocomprometidos|Higiene para evitar impetiginización","Antibiótico a los convivientes|Aislamiento de 1 mes");
+M("141-1","TA|Altura uterina|Latidos y movimientos fetales|Registro de las lesiones","Ecografía en el consultorio|Tacto rectal");
+M("141-3","Registrar en la HC|Evaluar el riesgo|Plan de seguridad|Informar la Línea 144|Trabajo social y psicología|Respetar sus tiempos y seguimiento cercano","Entrevista conjunta de mediación con Marcos|Hacer la denuncia aunque ella no quiera");
+M("142-1","Identificar asociaciones y reemplazarlas|Anticipar los síntomas de abstinencia|Sacar ceniceros de la casa|Posponer los cigarrillos|Pedir apoyo familiar","Fumar sólo afuera|Pasar al cigarrillo electrónico sin seguimiento");
+M("143-0","Frecuencia respiratoria|Sibilancias|Cianosis|Tiraje","Temperatura|Fontanela");
+M("143-2","Salbutamol 2 puff con aerocámara c/20 min por 1 hora|O2 si Tal ≥ 7|Reevaluar a la hora","Corticoide IM|Antibiótico");
+M("143-3","Salbutamol c/4-6 h en domicilio|Aspiración de secreciones|Alimentación fraccionada|Pautas de alarma|Control en 24-48 h","Internación|Antibiótico profiláctico");
+M("144-2","Visita domiciliaria con la promotora|Control puerperal y vacunas de Olivia|Evaluación de riesgo de violencia y plan de seguridad|Abordaje del consumo de Marcos|Trabajo social|Fecha de reevaluación","Esperar a que la familia consulte|No abordar la violencia para no exponer a Yésica");
 
 </script>
 <script>
@@ -2628,12 +2923,18 @@ const KEY="mf26-casos-v1";
 let st={a:{},sec:0,pend:false};
 try{const s=JSON.parse(localStorage.getItem(KEY)||"null"); if(s&&typeof s==="object") st=Object.assign(st,s);}catch(e){}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(st));}catch(e){}}
+// preguntas de selección múltiple
+CASES.forEach(c=>c.q.forEach(q=>{const m=MULTI[q.key];if(!m)return;q.multi=true;q.nOk=m.ok.length;q.opts=m.ok.concat(m.wr);
+  const a=st.a[q.key];if(a!==undefined&&!Array.isArray(a))delete st.a[q.key];}));
+CASES.forEach(c=>c.q.forEach(q=>{if(!q.multi&&Array.isArray(st.a[q.key]))delete st.a[q.key];}));
+function isOk(q,a){if(q.multi)return Array.isArray(a)&&a.length===q.nOk&&a.every(i=>i<q.nOk);return a===0;}
+const SEL={};
 // orden de opciones estable por pregunta
 function rng(seed){let x=seed>>>0||1;return()=>{x^=x<<13;x^=x>>>17;x^=x<<5;return (x>>>0)/4294967296;};}
-CASES.forEach(c=>c.q.forEach((q,i)=>{const r=rng((c.id+1)*7919+(i+1)*104729);const ord=[0,1,2,3];for(let k=3;k>0;k--){const j=Math.floor(r()*(k+1));[ord[k],ord[j]]=[ord[j],ord[k]];}q.ord=ord;}));
+CASES.forEach(c=>c.q.forEach((q,i)=>{const r=rng((c.id+1)*7919+(i+1)*104729);const n=q.opts.length;const ord=[...Array(n).keys()];for(let k=n-1;k>0;k--){const j=Math.floor(r()*(k+1));[ord[k],ord[j]]=[ord[j],ord[k]];}q.ord=ord;}));
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
-function caseStat(c){let ans=0,ok=0;c.q.forEach(q=>{const a=st.a[q.key];if(a!==undefined){ans++;if(a===0)ok++;}});return{ans,ok,n:c.q.length};}
+function caseStat(c){let ans=0,ok=0;c.q.forEach(q=>{const a=st.a[q.key];if(a!==undefined){ans++;if(isOk(q,a))ok++;}});return{ans,ok,n:c.q.length};}
 function secStat(s){let ans=0,n=0;CASES.filter(c=>c.s===s).forEach(c=>{const x=caseStat(c);n++;if(x.ans===x.n)ans++;});return{ans,n};}
 function renderMeter(){let qa=0,ok=0,done=0,n=CASES.length;CASES.forEach(c=>{const x=caseStat(c);qa+=x.ans;ok+=x.ok;if(x.ans===x.n)done++;});
   $("#gtxt").textContent=done+" / "+n+" casos terminados";$("#gbar").style.width=(n?done/n*100:0)+"%";$("#gpct").textContent=qa?Math.round(ok/qa*100)+"% correctas":"—";}
@@ -2675,23 +2976,44 @@ function caseEl(c,open){
 function buildBody(c,b,d){
   let h=`<div class="hc"><span class="lbl">Historia clínica</span>${c.v.split(/\n\n+/).map(p=>`<p>${esc(p)}</p>`).join("")}</div>`;
   if(c.img&&IMGS[c.img])h+=IMGS[c.img]();
-  c.q.forEach((q,i)=>{h+=`<div class="step" data-s="${i}">${q.info?`<div class="evo"><span class="lbl">Evolución</span><p>${esc(q.info)}</p></div>`:""}<div class="q" data-i="${i}"><div class="qh"><span class="qn">${i+1}/${c.q.length}</span><div class="qt">${esc(q.text)}<span class="tag ${q.type}">${TAGS[q.type]}</span></div></div><div class="opts"></div><div class="exp" hidden></div></div></div>`;});
+  c.q.forEach((q,i)=>{h+=`<div class="step" data-s="${i}">${q.info?`<div class="evo"><span class="lbl">Evolución</span><p>${esc(q.info)}</p></div>`:""}<div class="q" data-i="${i}"><div class="qh"><span class="qn">${i+1}/${c.q.length}</span><div class="qt">${esc(q.text)}<span class="tag ${q.type}">${TAGS[q.type]}</span></div></div>${q.multi?`<div class="mhint">Seleccioná todas las correctas (puede haber más de una) y confirmá.</div>`:""}<div class="opts"></div><div class="exp" hidden></div></div></div>`;});
   h+=`<div class="lock" hidden></div><div class="foot"><span class="score"></span><span style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="tbtn redo">Rehacer caso</button><button type="button" class="tbtn primary next">Siguiente caso</button></span></div>`;
   b.innerHTML=h;
   c.q.forEach((q,i)=>drawQ(c,q,b.querySelector(`.q[data-i="${i}"]`),d));
   steps(c,b);updFoot(c,b,d);
-  b.querySelector(".redo").onclick=()=>{c.q.forEach(q=>delete st.a[q.key]);save();c.q.forEach((q,i)=>drawQ(c,q,b.querySelector(`.q[data-i="${i}"]`),d));steps(c,b);updFoot(c,b,d);renderMeter();updCounts();};
+  b.querySelector(".redo").onclick=()=>{c.q.forEach(q=>{delete st.a[q.key];delete SEL[q.key];});save();c.q.forEach((q,i)=>drawQ(c,q,b.querySelector(`.q[data-i="${i}"]`),d));steps(c,b);updFoot(c,b,d);renderMeter();updCounts();};
   b.querySelector(".next").onclick=()=>nextCase(c);
 }
+function after(c,el,d,y){const b=d.querySelector(".body");steps(c,b);updFoot(c,b,d);renderMeter();updCounts();if(Math.abs(window.scrollY-y)>2)window.scrollTo(0,y);}
 function drawQ(c,q,el,d){
+  if(q.multi)return drawM(c,q,el,d);
   const a=st.a[q.key];const opts=el.querySelector(".opts");const exp=el.querySelector(".exp");opts.innerHTML="";
   q.ord.forEach((oi,pos)=>{const bt=document.createElement("button");bt.type="button";bt.className="opt";
-    bt.innerHTML=`<span class="k">${"abcd"[pos]})</span><span>${esc(q.opts[oi])}</span>`;
+    bt.innerHTML=`<span class="k">${"abcdefghij"[pos]})</span><span>${esc(q.opts[oi])}</span>`;
     if(a!==undefined){bt.disabled=true;if(oi===0)bt.classList.add("ok");else if(oi===a)bt.classList.add("bad");else bt.classList.add("dim");}
-    else bt.onclick=()=>{const y=window.scrollY;st.a[q.key]=oi;save();drawQ(c,q,el,d);const b=d.querySelector(".body");steps(c,b);updFoot(c,b,d);renderMeter();updCounts();if(Math.abs(window.scrollY-y)>2)window.scrollTo(0,y);};
+    else bt.onclick=()=>{const y=window.scrollY;st.a[q.key]=oi;save();drawQ(c,q,el,d);after(c,el,d,y);};
     opts.appendChild(bt);});
   if(a===undefined){exp.hidden=true;exp.className="exp";}
   else{exp.hidden=false;exp.className="exp "+(a===0?"ok":"bad");exp.innerHTML=`<b>${a===0?"Correcto.":"Incorrecto. La respuesta es: "+esc(q.opts[0])}</b>${esc(q.exp)}`;}
+}
+function drawM(c,q,el,d){
+  const a=st.a[q.key];const opts=el.querySelector(".opts");const exp=el.querySelector(".exp");opts.innerHTML="";
+  const sel=SEL[q.key]||(SEL[q.key]=new Set());
+  q.ord.forEach((oi,pos)=>{const bt=document.createElement("button");bt.type="button";bt.className="opt multi";
+    const good=oi<q.nOk;
+    if(a!==undefined){bt.disabled=true;const picked=a.includes(oi);
+      if(good&&picked)bt.classList.add("ok","sel");else if(good)bt.classList.add("miss");else if(picked)bt.classList.add("bad","sel");else bt.classList.add("dim");
+      bt.innerHTML=`<span class="k">${"abcdefghij"[pos]})</span><span>${esc(q.opts[oi])}${good&&!picked?'<span class="fl">faltó</span>':""}</span>`;}
+    else{if(sel.has(oi))bt.classList.add("sel");bt.setAttribute("aria-pressed",sel.has(oi));
+      bt.innerHTML=`<span class="k">${"abcdefghij"[pos]})</span><span>${esc(q.opts[oi])}</span>`;
+      bt.onclick=()=>{const y=window.scrollY;sel.has(oi)?sel.delete(oi):sel.add(oi);drawM(c,q,el,d);if(Math.abs(window.scrollY-y)>2)window.scrollTo(0,y);};}
+    opts.appendChild(bt);});
+  if(a===undefined){const cf=document.createElement("button");cf.type="button";cf.className="tbtn primary conf";cf.textContent=sel.size?`Confirmar (${sel.size})`:"Confirmar";cf.disabled=!sel.size;
+    cf.onclick=()=>{const y=window.scrollY;st.a[q.key]=[...sel].sort((x,z)=>x-z);delete SEL[q.key];save();drawM(c,q,el,d);after(c,el,d,y);};
+    opts.appendChild(cf);exp.hidden=true;exp.className="exp";}
+  else{const ok=isOk(q,a);const hit=a.filter(i=>i<q.nOk).length,wrong=a.length-hit;
+    exp.hidden=false;exp.className="exp "+(ok?"ok":"bad");
+    exp.innerHTML=`<b>${ok?"Correcto: marcaste las "+q.nOk+".":`Incompleto o con errores: ${hit} de ${q.nOk} correctas marcadas${wrong?`, ${wrong} incorrecta${wrong>1?"s":""}`:""}.`}</b>${ok?"":"<span>Correctas: "+q.opts.slice(0,q.nOk).map(esc).join(" · ")+".</span><br>"}${esc(q.exp)}`;}
 }
 function steps(c,b){let open=true,lockAt=-1;c.q.forEach((q,i)=>{const el=b.querySelector(`.step[data-s="${i}"]`);el.hidden=!open;if(open&&st.a[q.key]===undefined){open=false;lockAt=i;}});
   const lk=b.querySelector(".lock");const rem=c.q.length-1-lockAt;
