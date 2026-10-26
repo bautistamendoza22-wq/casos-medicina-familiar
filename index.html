@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Casos clínicos interactivos para practicar el examen de Medicina Familiar, basados en el cuadernillo 2026.">
-<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,"Segoe UI",sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,"Segoe UI",sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>Casos de Medicina Familiar</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,6 +21,13 @@
   --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
   --r:10px; color-scheme:light;
 }
+:root[data-theme="dark"]{
+  --bg:#000000; --card:#121212; --fg:#ece8e1; --muted:#a29d94; --line:#2c2c2c; --soft:#1b1b1b;
+  --accent:#5fb3a2; --accent-ink:#000000; --accent-soft:#16302b;
+  --ok:#6fd38f; --ok-soft:#12301d; --bad:#f08a80; --bad-soft:#3a1715; --warn:#e2b257; color-scheme:dark}
+:root[data-theme="dark"] .mcard:hover{box-shadow:none}
+:root[data-theme="dark"] .tag.A,:root[data-theme="dark"] .tag.E,:root[data-theme="dark"] .tag.S,:root[data-theme="dark"] .tag.PR,:root[data-theme="dark"] .tag.PL,:root[data-theme="dark"] .tag.C{color:color-mix(in oklab,var(--c) 45%,var(--fg));background:color-mix(in oklab,var(--c) 22%,var(--card))}
+:root[data-theme="dark"] .sec-head .num{color:color-mix(in oklab,var(--c) 45%,var(--fg))}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 body{background:var(--bg);color:var(--fg);font-family:var(--f-sans);font-size:15px;line-height:1.5}
@@ -158,6 +165,8 @@ nav.idx,.chips{display:none!important}
 .scard .mbar i{background:var(--c)}
 body[data-v="cases"] .top{border-bottom:3px solid var(--accent)}
 body[data-v="home"] .meter,body[data-v="home"] #rnd,body[data-v="home"] #resetWrap{display:none}
+.thm{border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:8px;padding:6px 10px;cursor:pointer;font-size:.85rem;white-space:nowrap}
+.thm:hover{border-color:var(--accent)}
 .note{font-size:.8rem;color:var(--muted);margin-top:28px;max-width:75ch}
 .empty{color:var(--muted);padding:24px;text-align:center;border:1px dashed var(--line);border-radius:var(--r)}
 .toast{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:8px 14px;border-radius:8px;font-size:.85rem;opacity:0;pointer-events:none;transition:opacity .2s}
@@ -182,6 +191,7 @@ body[data-v="home"] .meter,body[data-v="home"] #rnd,body[data-v="home"] #resetWr
   <div class="brand"><h1>Casos de Medicina Familiar</h1><span>Práctica con el cuadernillo 2026 · asma según GINA 2026 · ITU según IDSA 2025</span></div>
   <div class="meter"><span id="gtxt">0 / 0</span><div class="bar"><i id="gbar"></i></div><span id="gpct">—</span></div>
   <button class="tbtn primary" id="rnd" type="button">Caso al azar</button>
+  <button class="thm" id="thm" type="button" aria-label="Cambiar tema"></button>
   <span id="resetWrap"><button class="tbtn" id="reset" type="button">Borrar progreso</button></span>
 </div></header>
 
@@ -2960,7 +2970,7 @@ CASES.forEach(c=>c.q.forEach(q=>{const m=MULTI[q.key];if(!m)return;q.multi=true;
 CASES.forEach(c=>c.q.forEach(q=>{if(!q.multi&&Array.isArray(st.a[q.key]))delete st.a[q.key];}));
 function isOk(q,a){if(q.multi)return Array.isArray(a)&&a.length===q.nOk&&a.every(i=>i<q.nOk);return a===0;}
 const SEL={};
-if(!st.d||typeof st.d!=="object")st.d={};if(st.mode!=="dev")st.mode="mc";
+if(!st.d||typeof st.d!=="object")st.d={};if(st.theme!=="dark")st.theme="light";if(st.mode!=="dev")st.mode="mc";
 const DEV=st=>st.mode==="dev";
 // preguntas que dependen de las opciones: sólo en multiple choice
 const MCONLY=/cuál de est|\bNO\b|afirmaci|es correcta/i;
@@ -3124,9 +3134,20 @@ function renderSecs(){
 function renderCrumbs(){$("#crumbs").innerHTML=`<button type="button" class="back" id="bkS">← Secciones</button><span>Modo: <b>${MNAME[st.mode]}</b> · <button type="button" class="lnk" id="chM">cambiar modo</button></span>`;
   $("#bkS").onclick=()=>show("secs");$("#chM").onclick=()=>show("home");}
 const RS=document.documentElement.style;
-function setAccent(col){if(!col){["--accent","--accent-soft"].forEach(p=>RS.removeProperty(p));return;}
-  RS.setProperty("--accent",`color-mix(in oklab, ${col} 80%, #000)`);RS.setProperty("--accent-soft",`color-mix(in oklab, ${col} 11%, #f5f1e6)`);}
+let CURCOL=null;
+const TPROPS=["--accent","--accent-soft","--bg","--card","--soft","--line"];
+function setAccent(col){CURCOL=col;TPROPS.forEach(p=>RS.removeProperty(p));if(!col)return;
+  if(st.theme==="dark"){
+    RS.setProperty("--accent",`color-mix(in oklab, ${col} 55%, #fff)`);RS.setProperty("--accent-soft",`color-mix(in oklab, ${col} 24%, #121212)`);
+    RS.setProperty("--card",`color-mix(in oklab, ${col} 7%, #121212)`);RS.setProperty("--soft",`color-mix(in oklab, ${col} 11%, #161616)`);RS.setProperty("--line",`color-mix(in oklab, ${col} 22%, #2c2c2c)`);
+  }else{
+    RS.setProperty("--accent",`color-mix(in oklab, ${col} 80%, #000)`);RS.setProperty("--accent-soft",`color-mix(in oklab, ${col} 13%, #fff)`);
+    RS.setProperty("--bg",`color-mix(in oklab, ${col} 13%, #f6f4f0)`);RS.setProperty("--card",`color-mix(in oklab, ${col} 4%, #fbfaf8)`);
+    RS.setProperty("--soft",`color-mix(in oklab, ${col} 8%, #f3f1ec)`);RS.setProperty("--line",`color-mix(in oklab, ${col} 18%, #dcd8cf)`);}}
+function applyTheme(){document.documentElement.dataset.theme=st.theme==="dark"?"dark":"light";const b=$("#thm");if(b)b.textContent=st.theme==="dark"?"☀ Modo claro":"☾ Modo oscuro";setAccent(CURCOL);}
 let VIEW="home";
+$("#thm").onclick=()=>{st.theme=st.theme==="dark"?"light":"dark";save();applyTheme();};
+applyTheme();
 function show(v,opt){opt=opt||{};VIEW=v;document.body.dataset.v=v;
   $("#vhome").hidden=v!=="home";$("#vsecs").hidden=v!=="secs";$("#vcases").hidden=v!=="cases";
   if(v!=="cases")setAccent(null);
