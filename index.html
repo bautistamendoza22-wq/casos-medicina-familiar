@@ -130,6 +130,33 @@ figcaption{font-size:.8rem;color:var(--muted);margin-top:6px}
 .exp.ok b{color:var(--ok)} .exp.bad b{color:var(--bad)}
 .foot{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;align-items:center;border-top:1px dashed var(--line);padding-top:12px}
 .score{font-family:var(--f-mono);font-size:.85rem;color:var(--muted)}
+.wrap{grid-template-columns:minmax(0,1fr)!important;max-width:980px}
+nav.idx,.chips{display:none!important}
+.brand h1{cursor:pointer}
+.crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-bottom:14px;font-size:.88rem;color:var(--muted)}
+.back{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:.88rem;color:var(--fg)}
+.back:hover{border-color:var(--accent)}
+.crumbs .lnk{border:0;background:none;padding:0;color:var(--accent);text-decoration:underline;cursor:pointer;font-size:.88rem}
+.vhead{margin:4px 0 18px}
+.vhead h2{font-family:var(--f-serif);font-size:1.7rem;margin:0 0 4px;font-weight:600;text-wrap:balance}
+.vhead p{margin:0;color:var(--muted);max-width:70ch}
+.modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:16px}
+.mcard{display:flex;flex-direction:column;gap:10px;text-align:left;border:1px solid var(--line);background:var(--card);border-radius:14px;padding:20px;cursor:pointer;color:var(--fg);font:inherit}
+.mcard:hover{border-color:var(--accent);box-shadow:0 2px 10px rgb(0 0 0 / .06)}
+.mcard h3{font-family:var(--f-serif);font-size:1.35rem;margin:0;font-weight:600}
+.mcard p{margin:0;color:var(--muted);font-size:.92rem;line-height:1.45}
+.mcard .stat{font-family:var(--f-mono);font-size:.8rem;color:var(--muted);display:flex;align-items:center;gap:10px;font-variant-numeric:tabular-nums}
+.mcard .go{align-self:flex-start;margin-top:4px}
+.mbar{flex:1;height:6px;border-radius:3px;background:var(--soft);overflow:hidden}
+.mbar i{display:block;height:100%;background:var(--accent)}
+.secs{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,270px),1fr));gap:10px}
+.scard{display:grid;grid-template-columns:12px minmax(0,1fr);gap:4px 10px;align-items:start;text-align:left;border:1px solid var(--line);border-left:4px solid var(--c);background:var(--card);border-radius:10px;padding:12px 14px;cursor:pointer;font:inherit;color:var(--fg)}
+.scard:hover{border-color:var(--c);border-left-color:var(--c)}
+.scard .dot{margin-top:5px}
+.scard b{font-weight:600;line-height:1.3}
+.scard .stat{grid-column:2;font-family:var(--f-mono);font-size:.75rem;color:var(--muted);display:flex;align-items:center;gap:8px;font-variant-numeric:tabular-nums}
+.scard .mbar i{background:var(--c)}
+body[data-v="home"] .meter,body[data-v="home"] #rnd,body[data-v="home"] #resetWrap{display:none}
 .note{font-size:.8rem;color:var(--muted);margin-top:28px;max-width:75ch}
 .empty{color:var(--muted);padding:24px;text-align:center;border:1px dashed var(--line);border-radius:var(--r)}
 .toast{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:8px 14px;border-radius:8px;font-size:.85rem;opacity:0;pointer-events:none;transition:opacity .2s}
@@ -152,16 +179,18 @@ figcaption{font-size:.8rem;color:var(--muted);margin-top:6px}
 
 <header class="top"><div class="top-in">
   <div class="brand"><h1>Casos de Medicina Familiar</h1><span>Práctica con el cuadernillo 2026 · asma según GINA 2026 · ITU según IDSA 2025</span></div>
-  <div class="mode" role="group" aria-label="Modo"><button type="button" data-m="mc">Multiple choice</button><button type="button" data-m="dev">Desarrollo</button></div>
   <div class="meter"><span id="gtxt">0 / 0</span><div class="bar"><i id="gbar"></i></div><span id="gpct">—</span></div>
   <button class="tbtn primary" id="rnd" type="button">Caso al azar</button>
   <span id="resetWrap"><button class="tbtn" id="reset" type="button">Borrar progreso</button></span>
 </div></header>
 
-<div class="wrap">
+<div class="wrap" id="vhome" hidden><div id="home"></div></div>
+<div class="wrap" id="vsecs" hidden><div id="secs"></div></div>
+<div class="wrap" id="vcases">
   <nav class="idx" aria-label="Secciones"><h2>Secciones del cuadernillo</h2><ol id="idx"></ol></nav>
   <main>
     <div class="chips" id="chips" role="tablist" aria-label="Secciones"></div>
+    <div class="crumbs" id="crumbs"></div>
     <div class="sec-head" id="sechead"></div>
     <div id="secintro"></div>
     <div class="cases" id="cases"></div>
@@ -3069,19 +3098,41 @@ function nextCase(c){const order=CASES;let i=c.id+1;
   for(;i<order.length;i++){const x=caseStat(order[i]);if(x.ans<x.n)break;}
   if(i>=order.length){i=(c.id+1)%order.length;}
   openCase(order[i].id);}
-function openCase(id){const c=CASES[id];st.sec=c.s;save();renderIdx();centerChip();renderSection(id);
+function openCase(id){const c=CASES[id];st.sec=c.s;save();show("cases",{open:id,keepScroll:true});
   const el=document.getElementById("caso-"+id);if(el){el.open=true;el.scrollIntoView({block:"start",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});}}
-function go(i){st.sec=i;save();renderIdx();centerChip();renderSection();window.scrollTo({top:0});}
+function go(i){st.sec=i;save();show("cases");}
 function toast(t){const e=$("#toast");e.textContent=t;e.classList.add("on");clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove("on"),1800);}
 $("#rnd").onclick=()=>{const pend=CASES.filter(c=>{const x=caseStat(c);return x.ans<x.n;});const pool=pend.length?pend:CASES;const c=pool[Math.floor(Math.random()*pool.length)];
   if(st.pend&&!pend.includes(c)){st.pend=false;} openCase(c.id);toast(SECTIONS[c.s][0]);};
 function bindReset(){$("#reset").onclick=()=>{$("#resetWrap").innerHTML=`<span class="confirm">¿Borrar el progreso de ${DEV(st)?"desarrollo":"multiple choice"}? <button class="tbtn primary" id="ry" type="button">Sí, borrar</button><button class="tbtn" id="rn" type="button">Cancelar</button></span>`;
-  $("#ry").onclick=()=>{if(DEV(st))st.d={};else st.a={};save();restore();renderMeter();renderIdx();renderSection();toast("Progreso borrado");};$("#rn").onclick=restore;};}
+  $("#ry").onclick=()=>{if(DEV(st))st.d={};else st.a={};save();restore();show(VIEW,{nopush:true});toast("Progreso borrado");};$("#rn").onclick=restore;};}
 function restore(){$("#resetWrap").innerHTML=`<button class="tbtn" id="reset" type="button">Borrar progreso</button>`;bindReset();}
 bindReset();
-document.querySelectorAll(".mode button").forEach(b=>b.onclick=()=>{if(st.mode===b.dataset.m)return;st.mode=b.dataset.m;save();renderMeter();renderIdx();renderSection();toast(st.mode==="dev"?"Modo desarrollo":"Modo multiple choice");});
+const MNAME={mc:"Multiple choice",dev:"Desarrollo"};
+function statsFor(m,filter){const prev=st.mode;st.mode=m;let done=0,n=0,qa=0,ok=0,it=0,itn=0;
+  CASES.filter(filter||(()=>true)).forEach(c=>{const x=caseStat(c);n++;qa+=x.ans;ok+=x.ok;it+=x.it;itn+=x.itn;if(x.ans===x.n)done++;});st.mode=prev;return{done,n,qa,ok,it,itn};}
+function renderHome(){const card=(m,desc)=>{const x=statsFor(m);const pct=m==="dev"?(x.itn?Math.round(x.it/x.itn*100)+"% de ítems":"sin empezar"):(x.qa?Math.round(x.ok/x.qa*100)+"% correctas":"sin empezar");
+    return`<button type="button" class="mcard" data-m="${m}"><h3>${MNAME[m]}</h3><p>${desc}</p><span class="stat"><span>${x.done}/${x.n} casos</span><span class="mbar"><i style="width:${x.n?x.done/x.n*100:0}%"></i></span><span>${pct}</span></span><span class="tbtn primary go">Entrar</span></button>`;};
+  $("#home").innerHTML=`<div class="vhead"><h2>Elegí el modo</h2><p>Los dos modos usan los mismos casos y secciones; el progreso de cada uno se guarda por separado.</p></div><div class="modes">${card("mc","Leés el caso y elegís entre opciones. Algunas preguntas tienen más de una respuesta correcta.")}${card("dev","Escribís la respuesta y la corregís vos mismo con una lista de cotejo: tildás los ítems que incluiste.")}</div>`;
+  document.querySelectorAll(".mcard").forEach(b=>b.onclick=()=>{st.mode=b.dataset.m;save();show("secs");});}
+function renderSecs(){
+  $("#secs").innerHTML=`<div class="crumbs"><button type="button" class="back" id="bkH">← Modos</button><span>Modo: <b>${MNAME[st.mode]}</b></span></div><div class="vhead"><h2>Secciones</h2><p>Elegí una sección del cuadernillo.</p></div><div class="secs">${SECTIONS.map(([name,col],i)=>{const x=secStat(i);
+    return`<button type="button" class="scard" style="--c:${col}" data-i="${i}"><span class="dot"></span><b>${esc(name)}</b><span class="stat"><span>${x.ans}/${x.n} casos</span><span class="mbar"><i style="width:${x.n?x.ans/x.n*100:0}%"></i></span></span></button>`;}).join("")}</div>`;
+  $("#bkH").onclick=()=>show("home");
+  document.querySelectorAll(".scard").forEach(b=>b.onclick=()=>{st.sec=+b.dataset.i;save();show("cases");});}
+function renderCrumbs(){$("#crumbs").innerHTML=`<button type="button" class="back" id="bkS">← Secciones</button><span>Modo: <b>${MNAME[st.mode]}</b> · <button type="button" class="lnk" id="chM">cambiar modo</button></span>`;
+  $("#bkS").onclick=()=>show("secs");$("#chM").onclick=()=>show("home");}
+let VIEW="home";
+function show(v,opt){opt=opt||{};VIEW=v;document.body.dataset.v=v;
+  $("#vhome").hidden=v!=="home";$("#vsecs").hidden=v!=="secs";$("#vcases").hidden=v!=="cases";
+  if(v==="home")renderHome();else if(v==="secs"){renderMeter();renderSecs();}else{renderMeter();renderCrumbs();renderIdx();if(!opt.keep)renderSection(opt.open);}
+  if(!opt.nopush){try{history.pushState({v,sec:st.sec,mode:st.mode},"");}catch(e){}}
+  if(!opt.keepScroll)window.scrollTo({top:0});}
+window.addEventListener("popstate",e=>{const s=e.state;if(!s||!s.v){show("home",{nopush:true});return;}st.mode=s.mode||st.mode;st.sec=s.sec||0;save();show(s.v,{nopush:true});});
+document.querySelector(".brand h1").onclick=()=>show("home");
 if(!(st.sec>=0&&st.sec<SECTIONS.length))st.sec=0;
-renderMeter();renderIdx();centerChip();renderSection();
+try{history.replaceState({v:"home",sec:st.sec,mode:st.mode},"");}catch(e){}
+show("home",{nopush:true});
 })();
 </script>
 
