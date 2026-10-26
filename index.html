@@ -98,6 +98,11 @@ figure .scroll{overflow-x:auto}
 figcaption{font-size:.8rem;color:var(--muted);margin-top:6px}
 .q{display:flex;flex-direction:column;gap:8px}
 .qh{display:flex;gap:10px;align-items:baseline}
+.rep{margin-left:auto;flex:none;font-size:.75rem;color:var(--muted);text-decoration:none;border:1px solid transparent;border-radius:6px;padding:1px 6px;white-space:nowrap}
+.rep:hover{color:var(--bad);border-color:var(--line)}
+.pfoot{max-width:980px;margin:0 auto;padding:0 16px 40px;text-align:center;font-size:.85rem}
+.pfoot a{color:var(--muted)}
+.pfoot a:hover{color:var(--accent)}
 .qn{font-family:var(--f-mono);font-size:.8rem;color:var(--muted);flex:none}
 .qt{font-weight:600;max-width:72ch}
 .tag{font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;font-weight:600;padding:2px 7px;border-radius:4px;margin-left:6px;vertical-align:2px;white-space:nowrap}
@@ -207,6 +212,7 @@ body[data-v="home"] .meter,body[data-v="home"] #rnd,body[data-v="home"] #resetWr
     <div class="cases" id="cases"></div>
   </main>
 </div>
+<footer class="pfoot"><a id="repG" href="#" target="_blank" rel="noopener">Reportar un problema</a></footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
@@ -3033,7 +3039,7 @@ function buildBody(c,b,d){
   let h=`<div class="hc"><span class="lbl">Historia clínica</span>${c.v.split(/\n\n+/).map(p=>`<p>${esc(p)}</p>`).join("")}</div>`;
   if(c.img&&IMGS[c.img])h+=IMGS[c.img]();
   const qs=QS(c);
-  qs.forEach((q,i)=>{h+=`<div class="step" data-s="${i}">${q.info?`<div class="evo"><span class="lbl">Evolución</span><p>${esc(q.info)}</p></div>`:""}<div class="q" data-i="${i}"><div class="qh"><span class="qn">${i+1}/${qs.length}</span><div class="qt">${esc(q.text)}<span class="tag ${q.type}">${TAGS[q.type]}</span></div></div>${q.multi&&!DEV(st)?`<div class="mhint">Seleccioná todas las correctas (puede haber más de una) y confirmá.</div>`:""}<div class="opts"></div><div class="exp" hidden></div></div></div>`;});
+  qs.forEach((q,i)=>{h+=`<div class="step" data-s="${i}">${q.info?`<div class="evo"><span class="lbl">Evolución</span><p>${esc(q.info)}</p></div>`:""}<div class="q" data-i="${i}"><div class="qh"><span class="qn">${i+1}/${qs.length}</span><div class="qt">${esc(q.text)}<span class="tag ${q.type}">${TAGS[q.type]}</span></div><a class="rep" target="_blank" rel="noopener" title="Reportar un error en esta pregunta" href="${repURL(`${MNAME[st.mode]} · Sección ${c.s+1}: ${SECTIONS[c.s][0]} · Caso ${c.t} · Pregunta ${i+1}/${qs.length}: ${q.text} [${q.key}]`)}">⚑ Reportar</a></div>${q.multi&&!DEV(st)?`<div class="mhint">Seleccioná todas las correctas (puede haber más de una) y confirmá.</div>`:""}<div class="opts"></div><div class="exp" hidden></div></div></div>`;});
   h+=`<div class="lock" hidden></div><div class="foot"><span class="score"></span><span style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="tbtn redo">Rehacer caso</button><button type="button" class="tbtn primary next">Siguiente caso</button></span></div>`;
   b.innerHTML=h;
   qs.forEach((q,i)=>drawQ(c,q,b.querySelector(`.q[data-i="${i}"]`),d));
@@ -3119,6 +3125,10 @@ function bindReset(){$("#reset").onclick=()=>{$("#resetWrap").innerHTML=`<span c
 function restore(){$("#resetWrap").innerHTML=`<button class="tbtn" id="reset" type="button">Borrar progreso</button>`;bindReset();}
 bindReset();
 const MNAME={mc:"Multiple choice",dev:"Desarrollo"};
+const FORM="https://docs.google.com/forms/d/e/1FAIpQLSftgrD5iOICicm-e1v2x9tMEhtpjNjAxUTku2232PRPZZ2t0w/viewform?usp=pp_url&entry.1704390447=";
+function repURL(txt){return FORM+encodeURIComponent(txt);}
+function updRepG(){const a=$("#repG");if(!a)return;let s="General";
+  if(VIEW==="secs")s="Pantalla de secciones · "+MNAME[st.mode];else if(VIEW==="cases")s=MNAME[st.mode]+" · Sección "+(st.sec+1)+": "+SECTIONS[st.sec][0];a.href=repURL(s);}
 function statsFor(m,filter){const prev=st.mode;st.mode=m;let done=0,n=0,qa=0,ok=0,it=0,itn=0;
   CASES.filter(filter||(()=>true)).forEach(c=>{const x=caseStat(c);n++;qa+=x.ans;ok+=x.ok;it+=x.it;itn+=x.itn;if(x.ans===x.n)done++;});st.mode=prev;return{done,n,qa,ok,it,itn};}
 function renderHome(){const card=(m,desc)=>{const x=statsFor(m);const pct=m==="dev"?(x.itn?Math.round(x.it/x.itn*100)+"% de ítems":"sin empezar"):(x.qa?Math.round(x.ok/x.qa*100)+"% correctas":"sin empezar");
@@ -3151,6 +3161,7 @@ function show(v,opt){opt=opt||{};VIEW=v;document.body.dataset.v=v;
   $("#vhome").hidden=v!=="home";$("#vsecs").hidden=v!=="secs";$("#vcases").hidden=v!=="cases";
   if(v!=="cases")setAccent(null);
   if(v==="home")renderHome();else if(v==="secs"){renderMeter();renderSecs();}else{renderMeter();renderCrumbs();renderIdx();if(!opt.keep)renderSection(opt.open);}
+  updRepG();
   if(!opt.nopush){try{history.pushState({v,sec:st.sec,mode:st.mode},"");}catch(e){}}
   if(!opt.keepScroll)window.scrollTo({top:0});}
 window.addEventListener("popstate",e=>{const s=e.state;if(!s||!s.v){show("home",{nopush:true});return;}st.mode=s.mode||st.mode;st.sec=s.sec||0;save();show(s.v,{nopush:true});});
