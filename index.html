@@ -156,6 +156,7 @@ nav.idx,.chips{display:none!important}
 .scard b{font-weight:600;line-height:1.3}
 .scard .stat{grid-column:2;font-family:var(--f-mono);font-size:.75rem;color:var(--muted);display:flex;align-items:center;gap:8px;font-variant-numeric:tabular-nums}
 .scard .mbar i{background:var(--c)}
+body[data-v="cases"] .top{border-bottom:3px solid var(--accent)}
 body[data-v="home"] .meter,body[data-v="home"] #rnd,body[data-v="home"] #resetWrap{display:none}
 .note{font-size:.8rem;color:var(--muted);margin-top:28px;max-width:75ch}
 .empty{color:var(--muted);padding:24px;text-align:center;border:1px dashed var(--line);border-radius:var(--r)}
@@ -3000,7 +3001,7 @@ function pillFor(x){if(!x.ans)return`<span class="pill">${x.n} preguntas</span>`
   const f=x.ok/x.n;const cls=f>=0.8?"done":(f>=0.6?"mid":"low");return`<span class="pill ${cls}">${x.ok}/${x.n} correctas</span>`;}
 function renderSection(openId){
   const s=st.sec,[name,col]=SECTIONS[s];
-  document.documentElement.style.setProperty("--c",col);
+  document.documentElement.style.setProperty("--c",col);setAccent(col);
   const list=CASES.filter(c=>c.s===s);
   $("#secintro").innerHTML=SECINTRO[s]||"";
   $("#sechead").innerHTML=`<div><span class="num">Sección ${s+1} de ${SECTIONS.length} · ${list.length} casos</span><h2>${esc(name)}</h2></div>
@@ -3122,9 +3123,13 @@ function renderSecs(){
   document.querySelectorAll(".scard").forEach(b=>b.onclick=()=>{st.sec=+b.dataset.i;save();show("cases");});}
 function renderCrumbs(){$("#crumbs").innerHTML=`<button type="button" class="back" id="bkS">← Secciones</button><span>Modo: <b>${MNAME[st.mode]}</b> · <button type="button" class="lnk" id="chM">cambiar modo</button></span>`;
   $("#bkS").onclick=()=>show("secs");$("#chM").onclick=()=>show("home");}
+const RS=document.documentElement.style;
+function setAccent(col){if(!col){["--accent","--accent-soft"].forEach(p=>RS.removeProperty(p));return;}
+  RS.setProperty("--accent",`color-mix(in oklab, ${col} 80%, #000)`);RS.setProperty("--accent-soft",`color-mix(in oklab, ${col} 11%, #f5f1e6)`);}
 let VIEW="home";
 function show(v,opt){opt=opt||{};VIEW=v;document.body.dataset.v=v;
   $("#vhome").hidden=v!=="home";$("#vsecs").hidden=v!=="secs";$("#vcases").hidden=v!=="cases";
+  if(v!=="cases")setAccent(null);
   if(v==="home")renderHome();else if(v==="secs"){renderMeter();renderSecs();}else{renderMeter();renderCrumbs();renderIdx();if(!opt.keep)renderSection(opt.open);}
   if(!opt.nopush){try{history.pushState({v,sec:st.sec,mode:st.mode},"");}catch(e){}}
   if(!opt.keepScroll)window.scrollTo({top:0});}
