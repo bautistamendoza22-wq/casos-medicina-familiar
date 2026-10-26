@@ -29,11 +29,11 @@ button{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--card);border-bottom:1px solid var(--line)}
 .top-in{max-width:1180px;margin:0 auto;padding-block:12px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px}
-.brand{display:flex;flex-direction:column;min-width:0;flex:1 1 260px}
+.brand{display:flex;flex-direction:column;min-width:0;flex:1 1 200px}
 .brand h1{font-family:var(--f-serif);font-weight:600;font-size:1.25rem;margin:0;text-wrap:balance}
 .brand span{font-size:.8rem;color:var(--muted)}
 .meter{display:flex;align-items:center;gap:10px;font-family:var(--f-mono);font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
-.bar{width:140px;height:6px;border-radius:3px;background:var(--soft);overflow:hidden}
+.bar{width:100px;height:6px;border-radius:3px;background:var(--soft);overflow:hidden}
 .bar i{display:block;height:100%;background:var(--accent);width:0}
 .tbtn{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:.85rem}
 .tbtn:hover{border-color:var(--accent)}
@@ -114,8 +114,16 @@ figcaption{font-size:.8rem;color:var(--muted);margin-top:6px}
 .opt.miss{border:1px dashed #C77700;background:color-mix(in oklab,#C77700 10%,var(--card))}
 .opt.miss .k{color:#C77700;font-weight:600}
 .opt .fl{font-size:.72rem;font-weight:600;color:#C77700;margin-left:6px;text-transform:uppercase;letter-spacing:.04em}
+.mode{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--card)}
+.mode button{border:0;background:transparent;padding:6px 12px;font-size:.85rem;cursor:pointer;color:var(--muted)}
+.mode button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);font-weight:600}
+.dta{width:100%;min-height:110px;resize:vertical;font:inherit;font-size:.95rem;line-height:1.45;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--fg)}
+.dta:focus{outline:2px solid var(--accent);outline-offset:1px}
+.dans{border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--soft);white-space:pre-wrap;font-size:.93rem}
+.dans.empty{color:var(--muted);font-style:italic}
+.clh{font-size:.82rem;font-weight:600;color:var(--muted);margin-top:4px}
 .mhint{padding-left:30px;font-size:.82rem;color:var(--muted);margin:-2px 0 2px}
-.conf{margin-left:30px;align-self:flex-start}
+.conf{align-self:flex-start}
 .conf[disabled]{opacity:.5;cursor:default}
 .exp{margin-left:30px;font-size:.9rem;border-radius:8px;padding:9px 12px;background:var(--soft);max-width:78ch}
 .exp b{display:block;margin-bottom:2px}
@@ -144,6 +152,7 @@ figcaption{font-size:.8rem;color:var(--muted);margin-top:6px}
 
 <header class="top"><div class="top-in">
   <div class="brand"><h1>Casos de Medicina Familiar</h1><span>Práctica con el cuadernillo 2026 · asma según GINA 2026 · ITU según IDSA 2025</span></div>
+  <div class="mode" role="group" aria-label="Modo"><button type="button" data-m="mc">Multiple choice</button><button type="button" data-m="dev">Desarrollo</button></div>
   <div class="meter"><span id="gtxt">0 / 0</span><div class="bar"><i id="gbar"></i></div><span id="gpct">—</span></div>
   <button class="tbtn primary" id="rnd" type="button">Caso al azar</button>
   <span id="resetWrap"><button class="tbtn" id="reset" type="button">Borrar progreso</button></span>
@@ -2912,7 +2921,7 @@ M("144-2","Visita domiciliaria con la promotora|Control puerperal y vacunas de O
 <script>
 (function(){
 const KEY="mf26-casos-v1";
-let st={a:{},sec:0,pend:false};
+let st={a:{},d:{},mode:"mc",sec:0,pend:false};
 try{const s=JSON.parse(localStorage.getItem(KEY)||"null"); if(s&&typeof s==="object") st=Object.assign(st,s);}catch(e){}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(st));}catch(e){}}
 // preguntas de selección múltiple
@@ -2921,15 +2930,30 @@ CASES.forEach(c=>c.q.forEach(q=>{const m=MULTI[q.key];if(!m)return;q.multi=true;
 CASES.forEach(c=>c.q.forEach(q=>{if(!q.multi&&Array.isArray(st.a[q.key]))delete st.a[q.key];}));
 function isOk(q,a){if(q.multi)return Array.isArray(a)&&a.length===q.nOk&&a.every(i=>i<q.nOk);return a===0;}
 const SEL={};
+if(!st.d||typeof st.d!=="object")st.d={};if(st.mode!=="dev")st.mode="mc";
+const DEV=st=>st.mode==="dev";
+// preguntas que dependen de las opciones: sólo en multiple choice
+const MCONLY=/cuál de est|\bNO\b|afirmaci|es correcta/i;
+function QS(c){if(!DEV(st))return c.q;if(c.dq)return c.dq;let carry="";const out=[];
+  c.q.forEach(q=>{if(MCONLY.test(q.text)&&!q.multi){if(q.info)carry+=(carry?"\n\n":"")+q.info;return;}
+    const o=Object.assign({},q);if(carry){o.info=carry+(q.info?"\n\n"+q.info:"");carry="";}out.push(o);});
+  return c.dq=out;}
+function CL(q){return q.multi?q.opts.slice(0,q.nOk):[q.opts[0]];}
+function done(q){if(DEV(st)){const r=st.d[q.key];return !!(r&&r.f);}return st.a[q.key]!==undefined;}
 // orden de opciones estable por pregunta
 function rng(seed){let x=seed>>>0||1;return()=>{x^=x<<13;x^=x>>>17;x^=x<<5;return (x>>>0)/4294967296;};}
 CASES.forEach(c=>c.q.forEach((q,i)=>{const r=rng((c.id+1)*7919+(i+1)*104729);const n=q.opts.length;const ord=[...Array(n).keys()];for(let k=n-1;k>0;k--){const j=Math.floor(r()*(k+1));[ord[k],ord[j]]=[ord[j],ord[k]];}q.ord=ord;}));
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
-function caseStat(c){let ans=0,ok=0;c.q.forEach(q=>{const a=st.a[q.key];if(a!==undefined){ans++;if(isOk(q,a))ok++;}});return{ans,ok,n:c.q.length};}
+function caseStat(c){const qs=QS(c);let ans=0,ok=0,it=0,itn=0;
+  if(DEV(st))qs.forEach(q=>{const r=st.d[q.key];if(r&&r.f){ans++;const n=CL(q).length,k=(r.c||[]).length;it+=k;itn+=n;if(k===n)ok++;}});
+  else qs.forEach(q=>{const a=st.a[q.key];if(a!==undefined){ans++;if(isOk(q,a))ok++;}});
+  return{ans,ok,n:qs.length,it,itn};}
 function secStat(s){let ans=0,n=0;CASES.filter(c=>c.s===s).forEach(c=>{const x=caseStat(c);n++;if(x.ans===x.n)ans++;});return{ans,n};}
-function renderMeter(){let qa=0,ok=0,done=0,n=CASES.length;CASES.forEach(c=>{const x=caseStat(c);qa+=x.ans;ok+=x.ok;if(x.ans===x.n)done++;});
-  $("#gtxt").textContent=done+" / "+n+" casos terminados";$("#gbar").style.width=(n?done/n*100:0)+"%";$("#gpct").textContent=qa?Math.round(ok/qa*100)+"% correctas":"—";}
+function renderMeter(){let qa=0,ok=0,done=0,it=0,itn=0,n=CASES.length;CASES.forEach(c=>{const x=caseStat(c);qa+=x.ans;ok+=x.ok;it+=x.it;itn+=x.itn;if(x.ans===x.n)done++;});
+  document.querySelectorAll(".mode button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===st.mode));
+  if(DEV(st)){$("#gtxt").textContent=done+"/"+n+" casos";$("#gbar").style.width=(n?done/n*100:0)+"%";$("#gpct").textContent=itn?Math.round(it/itn*100)+"% de ítems":"—";return;}
+  $("#gtxt").textContent=done+"/"+n+" casos";$("#gbar").style.width=(n?done/n*100:0)+"%";$("#gpct").textContent=qa?Math.round(ok/qa*100)+"% correctas":"—";}
 function renderIdx(){
   const ol=$("#idx");ol.innerHTML="";const ch=$("#chips");ch.innerHTML="";
   SECTIONS.forEach(([name,col],i)=>{const n=CASES.filter(c=>c.s===i).length;const x=secStat(i);
@@ -2943,6 +2967,7 @@ function centerChip(){const ch=$("#chips");const cur=ch.querySelector('[aria-cur
 function updCounts(){const btns=document.querySelectorAll("#idx .cnt"),cb=document.querySelectorAll("#chips .cnt");SECTIONS.forEach((_,i)=>{const x=secStat(i);if(btns[i])btns[i].textContent=x.ans+"/"+x.n;if(cb[i])cb[i].textContent=x.ans+"/"+x.n;});}
 function pillFor(x){if(!x.ans)return`<span class="pill">${x.n} preguntas</span>`;
   if(x.ans<x.n)return`<span class="pill mid">${x.ans}/${x.n} respondidas</span>`;
+  if(DEV(st)){const f=x.itn?x.it/x.itn:0;const cls=f>=0.8?"done":(f>=0.6?"mid":"low");return`<span class="pill ${cls}">${Math.round(f*100)}% de ítems</span>`;}
   const f=x.ok/x.n;const cls=f>=0.8?"done":(f>=0.6?"mid":"low");return`<span class="pill ${cls}">${x.ok}/${x.n} correctas</span>`;}
 function renderSection(openId){
   const s=st.sec,[name,col]=SECTIONS[s];
@@ -2953,7 +2978,7 @@ function renderSection(openId){
    <div class="filters"><label for="pend"><input type="checkbox" id="pend" ${st.pend?"checked":""}> Sólo casos sin terminar</label></div>`;
   $("#pend").onchange=e=>{st.pend=e.target.checked;save();renderSection();};
   const box=$("#cases");box.innerHTML="";
-  const shown=list.filter(c=>!st.pend||caseStat(c).ans<c.q.length);
+  const shown=list.filter(c=>{const x=caseStat(c);return !st.pend||x.ans<x.n;});
   if(!shown.length){box.innerHTML=`<div class="empty">Terminaste todos los casos de esta sección. Desmarcá el filtro para revisarlos.</div>`;return;}
   shown.forEach(c=>box.appendChild(caseEl(c,c.id===openId)));
 }
@@ -2968,16 +2993,18 @@ function caseEl(c,open){
 function buildBody(c,b,d){
   let h=`<div class="hc"><span class="lbl">Historia clínica</span>${c.v.split(/\n\n+/).map(p=>`<p>${esc(p)}</p>`).join("")}</div>`;
   if(c.img&&IMGS[c.img])h+=IMGS[c.img]();
-  c.q.forEach((q,i)=>{h+=`<div class="step" data-s="${i}">${q.info?`<div class="evo"><span class="lbl">Evolución</span><p>${esc(q.info)}</p></div>`:""}<div class="q" data-i="${i}"><div class="qh"><span class="qn">${i+1}/${c.q.length}</span><div class="qt">${esc(q.text)}<span class="tag ${q.type}">${TAGS[q.type]}</span></div></div>${q.multi?`<div class="mhint">Seleccioná todas las correctas (puede haber más de una) y confirmá.</div>`:""}<div class="opts"></div><div class="exp" hidden></div></div></div>`;});
+  const qs=QS(c);
+  qs.forEach((q,i)=>{h+=`<div class="step" data-s="${i}">${q.info?`<div class="evo"><span class="lbl">Evolución</span><p>${esc(q.info)}</p></div>`:""}<div class="q" data-i="${i}"><div class="qh"><span class="qn">${i+1}/${qs.length}</span><div class="qt">${esc(q.text)}<span class="tag ${q.type}">${TAGS[q.type]}</span></div></div>${q.multi&&!DEV(st)?`<div class="mhint">Seleccioná todas las correctas (puede haber más de una) y confirmá.</div>`:""}<div class="opts"></div><div class="exp" hidden></div></div></div>`;});
   h+=`<div class="lock" hidden></div><div class="foot"><span class="score"></span><span style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="tbtn redo">Rehacer caso</button><button type="button" class="tbtn primary next">Siguiente caso</button></span></div>`;
   b.innerHTML=h;
-  c.q.forEach((q,i)=>drawQ(c,q,b.querySelector(`.q[data-i="${i}"]`),d));
+  qs.forEach((q,i)=>drawQ(c,q,b.querySelector(`.q[data-i="${i}"]`),d));
   steps(c,b);updFoot(c,b,d);
-  b.querySelector(".redo").onclick=()=>{c.q.forEach(q=>{delete st.a[q.key];delete SEL[q.key];});save();c.q.forEach((q,i)=>drawQ(c,q,b.querySelector(`.q[data-i="${i}"]`),d));steps(c,b);updFoot(c,b,d);renderMeter();updCounts();};
+  b.querySelector(".redo").onclick=()=>{qs.forEach(q=>{if(DEV(st))delete st.d[q.key];else{delete st.a[q.key];delete SEL[q.key];}});save();qs.forEach((q,i)=>drawQ(c,q,b.querySelector(`.q[data-i="${i}"]`),d));steps(c,b);updFoot(c,b,d);renderMeter();updCounts();};
   b.querySelector(".next").onclick=()=>nextCase(c);
 }
 function after(c,el,d,y){const b=d.querySelector(".body");steps(c,b);updFoot(c,b,d);renderMeter();updCounts();if(Math.abs(window.scrollY-y)>2)window.scrollTo(0,y);}
 function drawQ(c,q,el,d){
+  if(DEV(st))return drawD(c,q,el,d);
   if(q.multi)return drawM(c,q,el,d);
   const a=st.a[q.key];const opts=el.querySelector(".opts");const exp=el.querySelector(".exp");opts.innerHTML="";
   q.ord.forEach((oi,pos)=>{const bt=document.createElement("button");bt.type="button";bt.className="opt";
@@ -3007,24 +3034,52 @@ function drawM(c,q,el,d){
     exp.hidden=false;exp.className="exp "+(ok?"ok":"bad");
     exp.innerHTML=`<b>${ok?"Correcto: marcaste las "+q.nOk+".":`Incompleto o con errores: ${hit} de ${q.nOk} correctas marcadas${wrong?`, ${wrong} incorrecta${wrong>1?"s":""}`:""}.`}</b>${ok?"":"<span>Correctas: "+q.opts.slice(0,q.nOk).map(esc).join(" · ")+".</span><br>"}${esc(q.exp)}`;}
 }
-function steps(c,b){let open=true,lockAt=-1;c.q.forEach((q,i)=>{const el=b.querySelector(`.step[data-s="${i}"]`);el.hidden=!open;if(open&&st.a[q.key]===undefined){open=false;lockAt=i;}});
-  const lk=b.querySelector(".lock");const rem=c.q.length-1-lockAt;
+function drawD(c,q,el,d){
+  const opts=el.querySelector(".opts");const exp=el.querySelector(".exp");opts.innerHTML="";
+  const r=st.d[q.key]||{};const items=CL(q);const one=items.length===1;
+  if(!r.k){const ta=document.createElement("textarea");ta.className="dta";ta.placeholder="Escribí tu respuesta…";ta.value=r.t||"";
+    ta.oninput=()=>{st.d[q.key]={t:ta.value};save();};opts.appendChild(ta);
+    const bt=document.createElement("button");bt.type="button";bt.className="tbtn primary";bt.style.alignSelf="flex-start";bt.textContent="Corregir con la lista";
+    bt.onclick=()=>{const y=window.scrollY;st.d[q.key]={t:ta.value,k:1,c:[]};save();drawD(c,q,el,d);if(Math.abs(window.scrollY-y)>2)window.scrollTo(0,y);};
+    opts.appendChild(bt);exp.hidden=true;exp.className="exp";return;}
+  const an=document.createElement("div");an.className="dans"+((r.t||"").trim()?"":" empty");an.textContent=(r.t||"").trim()||"(sin respuesta escrita)";opts.appendChild(an);
+  const hd=document.createElement("div");hd.className="clh";
+  hd.textContent=r.f?(one?"Respuesta esperada":"Lista de cotejo"):(one?"Respuesta esperada: tildala si tu respuesta la incluye.":`Lista de cotejo: tildá cada ítem que incluiste (${items.length}).`);opts.appendChild(hd);
+  const chk=new Set(r.c||[]);
+  items.forEach((it,i)=>{const bt=document.createElement("button");bt.type="button";bt.className="opt multi";const has=chk.has(i);
+    if(r.f){bt.disabled=true;bt.classList.add(has?"ok":"miss");if(has)bt.classList.add("sel");
+      bt.innerHTML=`<span class="k">${i+1}.</span><span>${esc(it)}${has?"":'<span class="fl">faltó</span>'}</span>`;}
+    else{if(has)bt.classList.add("sel");bt.setAttribute("aria-pressed",has);bt.innerHTML=`<span class="k">${i+1}.</span><span>${esc(it)}</span>`;
+      bt.onclick=()=>{const y=window.scrollY;has?chk.delete(i):chk.add(i);r.c=[...chk].sort((a,z)=>a-z);st.d[q.key]=r;save();drawD(c,q,el,d);if(Math.abs(window.scrollY-y)>2)window.scrollTo(0,y);};}
+    opts.appendChild(bt);});
+  if(!r.f){const row=document.createElement("div");row.style.cssText="display:flex;gap:8px;flex-wrap:wrap";
+    const ok=document.createElement("button");ok.type="button";ok.className="tbtn primary";ok.textContent=`Listo (${chk.size}/${items.length})`;
+    ok.onclick=()=>{const y=window.scrollY;r.f=1;st.d[q.key]=r;save();drawD(c,q,el,d);after(c,el,d,y);};
+    const ed=document.createElement("button");ed.type="button";ed.className="tbtn";ed.textContent="Volver a editar";
+    ed.onclick=()=>{const y=window.scrollY;st.d[q.key]={t:r.t};save();drawD(c,q,el,d);if(Math.abs(window.scrollY-y)>2)window.scrollTo(0,y);};
+    row.append(ok,ed);opts.appendChild(row);exp.hidden=true;exp.className="exp";return;}
+  const k=chk.size,n=items.length;exp.hidden=false;exp.className="exp "+(k===n?"ok":"bad");
+  exp.innerHTML=`<b>${k===n?(one?"Incluiste la respuesta esperada.":`Completo: ${n} de ${n} ítems.`):(one?"No incluiste la respuesta esperada.":`${k} de ${n} ítems.`)}</b>${esc(q.exp)}`;
+}
+function steps(c,b){const qs=QS(c);let open=true,lockAt=-1;qs.forEach((q,i)=>{const el=b.querySelector(`.step[data-s="${i}"]`);el.hidden=!open;if(open&&!done(q)){open=false;lockAt=i;}});
+  const lk=b.querySelector(".lock");const rem=qs.length-1-lockAt;
   if(lockAt>=0&&rem>0){lk.hidden=false;lk.textContent=`Respondé la pregunta ${lockAt+1} para ver cómo sigue el caso (${rem} pregunta${rem>1?"s":""} más).`;}else lk.hidden=true;}
-function updFoot(c,b,d){const x=caseStat(c);b.querySelector(".score").textContent=x.ans<x.n?`${x.ans} de ${x.n} respondidas`:`Resultado: ${x.ok} de ${x.n} correctas`;d.querySelector(".pill-slot").innerHTML=pillFor(x);}
+function updFoot(c,b,d){const x=caseStat(c);b.querySelector(".score").textContent=x.ans<x.n?`${x.ans} de ${x.n} respondidas`:(DEV(st)?`Resultado: ${x.it} de ${x.itn} ítems de la lista`:`Resultado: ${x.ok} de ${x.n} correctas`);d.querySelector(".pill-slot").innerHTML=pillFor(x);}
 function nextCase(c){const order=CASES;let i=c.id+1;
-  for(;i<order.length;i++){if(caseStat(order[i]).ans<order[i].q.length)break;}
+  for(;i<order.length;i++){const x=caseStat(order[i]);if(x.ans<x.n)break;}
   if(i>=order.length){i=(c.id+1)%order.length;}
   openCase(order[i].id);}
 function openCase(id){const c=CASES[id];st.sec=c.s;save();renderIdx();centerChip();renderSection(id);
   const el=document.getElementById("caso-"+id);if(el){el.open=true;el.scrollIntoView({block:"start",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});}}
 function go(i){st.sec=i;save();renderIdx();centerChip();renderSection();window.scrollTo({top:0});}
 function toast(t){const e=$("#toast");e.textContent=t;e.classList.add("on");clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove("on"),1800);}
-$("#rnd").onclick=()=>{const pend=CASES.filter(c=>caseStat(c).ans<c.q.length);const pool=pend.length?pend:CASES;const c=pool[Math.floor(Math.random()*pool.length)];
+$("#rnd").onclick=()=>{const pend=CASES.filter(c=>{const x=caseStat(c);return x.ans<x.n;});const pool=pend.length?pend:CASES;const c=pool[Math.floor(Math.random()*pool.length)];
   if(st.pend&&!pend.includes(c)){st.pend=false;} openCase(c.id);toast(SECTIONS[c.s][0]);};
-function bindReset(){$("#reset").onclick=()=>{$("#resetWrap").innerHTML=`<span class="confirm">¿Borrar todo? <button class="tbtn primary" id="ry" type="button">Sí, borrar</button><button class="tbtn" id="rn" type="button">Cancelar</button></span>`;
-  $("#ry").onclick=()=>{st.a={};save();restore();renderMeter();renderIdx();renderSection();toast("Progreso borrado");};$("#rn").onclick=restore;};}
+function bindReset(){$("#reset").onclick=()=>{$("#resetWrap").innerHTML=`<span class="confirm">¿Borrar el progreso de ${DEV(st)?"desarrollo":"multiple choice"}? <button class="tbtn primary" id="ry" type="button">Sí, borrar</button><button class="tbtn" id="rn" type="button">Cancelar</button></span>`;
+  $("#ry").onclick=()=>{if(DEV(st))st.d={};else st.a={};save();restore();renderMeter();renderIdx();renderSection();toast("Progreso borrado");};$("#rn").onclick=restore;};}
 function restore(){$("#resetWrap").innerHTML=`<button class="tbtn" id="reset" type="button">Borrar progreso</button>`;bindReset();}
 bindReset();
+document.querySelectorAll(".mode button").forEach(b=>b.onclick=()=>{if(st.mode===b.dataset.m)return;st.mode=b.dataset.m;save();renderMeter();renderIdx();renderSection();toast(st.mode==="dev"?"Modo desarrollo":"Modo multiple choice");});
 if(!(st.sec>=0&&st.sec<SECTIONS.length))st.sec=0;
 renderMeter();renderIdx();centerChip();renderSection();
 })();
