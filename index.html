@@ -111,6 +111,14 @@ figcaption{font-size:.8rem;color:var(--muted);margin-top:6px}
 .gcases button{border:1px solid var(--line);background:var(--soft);border-radius:999px;padding:3px 10px;font-size:.8rem;cursor:pointer;color:var(--fg)}
 .gcases button:hover{border-color:var(--accent)}
 .updlink{margin-top:18px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:.9rem;color:var(--muted)}
+#acctWrap{display:inline-flex;align-items:center;gap:6px}
+#acctWrap:empty{display:none}
+.acct{border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:8px;padding:6px 10px;cursor:pointer;font-size:.85rem;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+.acct:hover{border-color:var(--accent)}
+.acct .av{width:20px;height:20px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:inline-grid;place-items:center;font-size:.72rem;font-weight:600}
+.sst{font-size:.75rem;color:var(--muted);white-space:nowrap}
+.sst.err{color:var(--bad)}
+.syncnote{margin-top:14px;font-size:.9rem;color:var(--muted);display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .pfoot{max-width:980px;margin:0 auto;padding:0 16px 40px;text-align:center;font-size:.85rem}
 .pfoot a{color:var(--muted)}
 .pfoot a:hover{color:var(--accent)}
@@ -207,6 +215,7 @@ body[data-v="home"] .meter,body[data-v="home"] #rnd,body[data-v="home"] #resetWr
   <div class="brand"><h1>Casos de Medicina Familiar</h1></div>
   <div class="meter"><span id="gtxt">0 / 0</span><div class="bar"><i id="gbar"></i></div><span id="gpct">—</span></div>
   <button class="tbtn primary" id="rnd" type="button">Caso al azar</button>
+  <span id="acctWrap"></span>
   <button class="thm" id="thm" type="button" aria-label="Cambiar tema"></button>
   <span id="resetWrap"><button class="tbtn" id="reset" type="button">Borrar progreso</button></span>
 </div></header>
@@ -2997,16 +3006,18 @@ M("144-2","Visita domiciliaria con la promotora|Control puerperal y vacunas de O
 const KEY="mf26-casos-v1";
 let st={a:{},d:{},mode:"mc",sec:0,pend:false};
 try{const s=JSON.parse(localStorage.getItem(KEY)||"null"); if(s&&typeof s==="object") st=Object.assign(st,s);}catch(e){}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(st));}catch(e){}}
+function saveLocal(){try{localStorage.setItem(KEY,JSON.stringify(st));}catch(e){}}
+function save(){saveLocal();if(typeof syncSoon==="function")syncSoon();}
 // preguntas de selección múltiple
-CASES.forEach(c=>c.q.forEach(q=>{const m=MULTI[q.key];if(!m)return;q.multi=true;q.nOk=m.ok.length;q.opts=m.ok.concat(m.wr);
-  const a=st.a[q.key];if(a!==undefined&&!Array.isArray(a))delete st.a[q.key];}));
-CASES.forEach(c=>c.q.forEach(q=>{if(!q.multi&&Array.isArray(st.a[q.key]))delete st.a[q.key];}));
+CASES.forEach(c=>c.q.forEach(q=>{const m=MULTI[q.key];if(!m)return;q.multi=true;q.nOk=m.ok.length;q.opts=m.ok.concat(m.wr);}));
+function sanitize(){CASES.forEach(c=>c.q.forEach(q=>{const a=st.a[q.key];if(a===undefined)return;if(!!q.multi!==Array.isArray(a))delete st.a[q.key];}));}
+sanitize();
 function isOk(q,a){if(q.multi)return Array.isArray(a)&&a.length===q.nOk&&a.every(i=>i<q.nOk);return a===0;}
 // preguntas reescritas: se descarta la respuesta guardada para que se vuelvan a responder
 const REDO={guias2026b:["24-2","24-3","24-4","24-d2","27-1","27-4","90-3","121-1","121-4"],hta2026:["32-0","32-1","32-2","32-3","32-4","32-d1","32-d2","33-0","33-1","33-2","33-3","33-4","36-1","116-4","130-3"]};
 if(!Array.isArray(st.rv))st.rv=[];
-Object.keys(REDO).forEach(v=>{if(st.rv.includes(v))return;REDO[v].forEach(k=>{delete st.a[k];if(st.d)delete st.d[k];});st.rv.push(v);save();});
+function applyRedo(o){let ch=false;Object.keys(REDO).forEach(v=>{if(o.rv.includes(v))return;REDO[v].forEach(k=>{delete o.a[k];if(o.d)delete o.d[k];});o.rv.push(v);ch=true;});return ch;}
+if(applyRedo(st))saveLocal();
 const SEL={};
 if(!st.d||typeof st.d!=="object")st.d={};if(st.theme!=="dark")st.theme="light";if(st.mode!=="dev")st.mode="mc";
 const DEV=st=>st.mode==="dev";
@@ -3185,6 +3196,7 @@ function statsFor(m,filter){const prev=st.mode;st.mode=m;let done=0,n=0,qa=0,ok=
 function renderHome(){const card=(m,desc)=>{const x=statsFor(m);const pct=m==="dev"?(x.itn?Math.round(x.it/x.itn*100)+"% de ítems":"sin empezar"):(x.qa?Math.round(x.ok/x.qa*100)+"% correctas":"sin empezar");
     return`<button type="button" class="mcard" data-m="${m}"><h3>${MNAME[m]}</h3><p>${desc}</p><span class="stat"><span>${x.done}/${x.n} casos</span><span class="mbar"><i style="width:${x.n?x.done/x.n*100:0}%"></i></span><span>${pct}</span></span><span class="tbtn primary go">Entrar</span></button>`;};
   $("#home").innerHTML=`<div class="vhead"><h2>Elegí el modo</h2><p>Los dos modos usan los mismos casos y secciones; el progreso de cada uno se guarda por separado.</p></div><div class="modes">${card("mc","Leés el caso y elegís entre opciones. Algunas preguntas tienen más de una respuesta correcta.")}${card("dev","Escribís la respuesta y la corregís vos mismo con una lista de cotejo: tildás los ítems que incluiste.")}</div>`;
+  if(SYNC_OK&&!fbUser&&fb)$("#home").insertAdjacentHTML("beforeend",`<div class="syncnote"><span>Iniciá sesión con tu cuenta de Google para guardar el progreso y seguir en otro dispositivo.</span><button type="button" class="tbtn primary" id="login2">Iniciar sesión con Google</button></div>`);if($("#login2"))$("#login2").onclick=login;
   $("#home").insertAdjacentHTML("beforeend",`<div class="updlink"><span>Contenido del cuadernillo 2026, revisado con guías 2025-2026.</span><button type="button" class="tbtn" id="goUpd">Ver actualizaciones</button></div>`);$("#goUpd").onclick=()=>show("upd");
   document.querySelectorAll(".mcard").forEach(b=>b.onclick=()=>{st.mode=b.dataset.m;save();show("secs");});}
 function renderSecs(){
@@ -3220,8 +3232,41 @@ function show(v,opt){opt=opt||{};VIEW=v;document.body.dataset.v=v;
 window.addEventListener("popstate",e=>{const s=e.state;if(!s||!s.v){show("home",{nopush:true});return;}st.mode=s.mode||st.mode;st.sec=s.sec||0;save();show(s.v,{nopush:true});});
 document.querySelector(".brand h1").onclick=()=>show("home");
 if(!(st.sec>=0&&st.sec<SECTIONS.length))st.sec=0;
+// ---------- sincronización con Firebase (sólo en la versión web)
+const FB_CONFIG={apiKey:"AIzaSyCEmqURcetYy-KQ69Y7mmFMt_QsIcg4Skc",authDomain:"casos-medicina-familiar.firebaseapp.com",projectId:"casos-medicina-familiar",storageBucket:"casos-medicina-familiar.firebasestorage.app",messagingSenderId:"600732346817",appId:"1:600732346817:web:9ef0b8d1d39f2f3e10a740"};
+const SYNC_OK=!!FB_CONFIG&&(/github\.io$|^localhost$|^127\.0\.0\.1$/.test(location.hostname)||!!window.__fbStub);
+let fb=null,fbUser=null,db=null,syncT=null,sstate="";
+function loadScript(src){return new Promise((res,rej)=>{const s=document.createElement("script");s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s);});}
+function renderAcct(){const w=$("#acctWrap");if(!w)return;if(!SYNC_OK){w.innerHTML="";return;}
+  if(!fbUser){w.innerHTML=sstate==="load"?`<span class="sst">Conectando…</span>`:`<button type="button" class="acct" id="login">Iniciar sesión</button>`;const b=$("#login");if(b)b.onclick=login;return;}
+  const nm=(fbUser.displayName||fbUser.email||"?").trim();const st2={ok:"☁ Guardado",pending:"Guardando…",sync:"Sincronizando…",error:"⚠ Sin sincronizar"}[sstate]||"☁";
+  w.innerHTML=`<span class="sst${sstate==="error"?" err":""}">${st2}</span><button type="button" class="acct" id="acctB" title="${esc(fbUser.email||"")}"><span class="av">${esc(nm[0].toUpperCase())}</span>Salir</button>`;
+  $("#acctB").onclick=logout;}
+async function initSync(){if(!SYNC_OK)return;sstate="load";renderAcct();
+  try{if(window.__fbStub){fb=window.__fbStub;}else{const B="https://cdn.jsdelivr.net/npm/firebase@10.14.1/";await loadScript(B+"firebase-app-compat.js");await loadScript(B+"firebase-auth-compat.js");await loadScript(B+"firebase-firestore-compat.js");fb=window.firebase;fb.initializeApp(FB_CONFIG);}
+    db=fb.firestore();fb.auth().getRedirectResult().catch(()=>{});
+    fb.auth().onAuthStateChanged(u=>{fbUser=u;sstate=u?"sync":"";renderAcct();if(VIEW==="home")renderHome();if(u)pull();});
+  }catch(e){sstate="";fb=null;const w=$("#acctWrap");if(w)w.innerHTML=`<span class="sst err">Sincronización no disponible</span>`;}}
+function login(){if(!fb)return;const p=new fb.auth.GoogleAuthProvider();p.setCustomParameters({prompt:"select_account"});
+  fb.auth().signInWithPopup(p).catch(e=>{const c=e&&e.code||"";if(/popup-blocked|operation-not-supported|web-storage-unsupported/.test(c))fb.auth().signInWithRedirect(p);else if(!/popup-closed|cancelled-popup/.test(c))toast("No se pudo iniciar sesión");});}
+async function logout(){if(!fb)return;clearTimeout(syncT);if(st.dirty)await push();await fb.auth().signOut();
+  st.a={};st.d={};delete st.uid;st.dirty=false;saveLocal();show(VIEW==="cases"?"secs":VIEW,{nopush:true});toast("Sesión cerrada: tu progreso queda guardado en tu cuenta");}
+function ref(){return db.collection("progreso").doc(fbUser.uid);}
+async function pull(){try{const snap=await ref().get();const r=snap.exists?snap.data():null;
+    if(r){const rem={a:r.a||{},d:r.d||{},rv:Array.isArray(r.rv)?r.rv:[]};applyRedo(rem);
+      if(st.uid===fbUser.uid&&!st.dirty){st.a=rem.a;st.d=rem.d;}
+      else{st.a=Object.assign({},rem.a,st.a);st.d=Object.assign({},rem.d,st.d);}
+      st.rv=[...new Set([...rem.rv,...st.rv])];}
+    st.uid=fbUser.uid;sanitize();saveLocal();await push();
+    show(VIEW,{nopush:true,keepScroll:true});
+  }catch(e){sstate="error";renderAcct();}}
+function push(){if(!fbUser||!db)return Promise.resolve();clearTimeout(syncT);st.dirty=true;saveLocal();
+  return ref().set({a:st.a,d:st.d,rv:st.rv,updated:Date.now()}).then(()=>{st.dirty=false;saveLocal();sstate="ok";renderAcct();}).catch(()=>{sstate="error";renderAcct();});}
+function syncSoon(){if(!fbUser||!db)return;st.dirty=true;saveLocal();sstate="pending";renderAcct();clearTimeout(syncT);syncT=setTimeout(push,1500);}
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden"&&fbUser&&st.dirty)push();});
 try{history.replaceState({v:"home",sec:st.sec,mode:st.mode},"");}catch(e){}
 show("home",{nopush:true});
+initSync();
 })();
 </script>
 
