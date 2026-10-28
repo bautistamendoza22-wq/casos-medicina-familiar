@@ -216,38 +216,38 @@ body[data-v="home"] .meter,body[data-v="home"] #rnd,body[data-v="home"] #resetWr
 @keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.025)}100%{transform:scale(1)}}
 @keyframes shake{0%,100%{transform:none}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(2px)}}
 @keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
-.venter{animation:inUp .35s cubic-bezier(.2,.8,.3,1) both}
-.modes>.mcard,.secs>.scard,#cases>details.case,.updlist>.gcard{animation:inUp .4s cubic-bezier(.2,.8,.3,1) both}
-.modes>.mcard:nth-child(2){animation-delay:.06s}
-.secs>.scard:nth-child(2),#cases>details.case:nth-child(2),.updlist>.gcard:nth-child(2){animation-delay:.03s}
-.secs>.scard:nth-child(3),#cases>details.case:nth-child(3),.updlist>.gcard:nth-child(3){animation-delay:.06s}
-.secs>.scard:nth-child(4),#cases>details.case:nth-child(4),.updlist>.gcard:nth-child(4){animation-delay:.09s}
-.secs>.scard:nth-child(5),#cases>details.case:nth-child(5),.updlist>.gcard:nth-child(5){animation-delay:.12s}
-.secs>.scard:nth-child(6),#cases>details.case:nth-child(6),.updlist>.gcard:nth-child(6){animation-delay:.15s}
-.secs>.scard:nth-child(7),#cases>details.case:nth-child(7),.updlist>.gcard:nth-child(7){animation-delay:.18s}
-.secs>.scard:nth-child(8),#cases>details.case:nth-child(8),.updlist>.gcard:nth-child(8){animation-delay:.21s}
-.secs>.scard:nth-child(n+9),#cases>details.case:nth-child(n+9){animation-delay:.24s}
-.sec-head{animation:fadeIn .3s ease-out both}
-details.case[open]>.body{animation:inUp .3s cubic-bezier(.2,.8,.3,1) both}
-details.case>summary{transition:background-color .2s}
+.venter{animation:inUp 0.56s cubic-bezier(.2,.8,.3,1) both}
+.modes>.mcard,.secs>.scard,#cases>details.case,.updlist>.gcard{animation:inUp 0.64s cubic-bezier(.2,.8,.3,1) both}
+.modes>.mcard:nth-child(2){animation-delay:0.1s}
+.secs>.scard:nth-child(2),#cases>details.case:nth-child(2),.updlist>.gcard:nth-child(2){animation-delay:0.05s}
+.secs>.scard:nth-child(3),#cases>details.case:nth-child(3),.updlist>.gcard:nth-child(3){animation-delay:0.1s}
+.secs>.scard:nth-child(4),#cases>details.case:nth-child(4),.updlist>.gcard:nth-child(4){animation-delay:0.14s}
+.secs>.scard:nth-child(5),#cases>details.case:nth-child(5),.updlist>.gcard:nth-child(5){animation-delay:0.19s}
+.secs>.scard:nth-child(6),#cases>details.case:nth-child(6),.updlist>.gcard:nth-child(6){animation-delay:0.24s}
+.secs>.scard:nth-child(7),#cases>details.case:nth-child(7),.updlist>.gcard:nth-child(7){animation-delay:0.29s}
+.secs>.scard:nth-child(8),#cases>details.case:nth-child(8),.updlist>.gcard:nth-child(8){animation-delay:0.34s}
+.secs>.scard:nth-child(n+9),#cases>details.case:nth-child(n+9){animation-delay:0.38s}
+.sec-head{animation:fadeIn 0.48s ease-out both}
+details.case[open]>.body{animation:inUp 0.48s cubic-bezier(.2,.8,.3,1) both}
+details.case>summary{transition:background-color 0.32s}
 details.case>summary:hover{background:color-mix(in oklab,var(--c,var(--accent)) 6%,transparent)}
-.step.reveal{animation:inUp .4s cubic-bezier(.2,.8,.3,1) both}
-.step.reveal .evo{animation:fadeIn .5s ease-out both}
-.lock{animation:fadeIn .3s ease-out}
-.q.fx .opt.ok{animation:pop .35s ease-out}
-.q.fx .opt.bad{animation:shake .4s ease-out}
-.q.fx .opt.miss{animation:pop .35s ease-out .08s}
-.q.fx .exp{animation:inUp .35s cubic-bezier(.2,.8,.3,1) both}
-.q.fx .clh,.q.fx .dans{animation:fadeIn .3s ease-out both}
-.opt,.tbtn,.thm,.acct,.back,.mcard,.scard,.gcases button,.pill,.dta{transition:background-color .18s,border-color .18s,color .18s,transform .12s,box-shadow .2s}
+.step.reveal{animation:inUp 0.64s cubic-bezier(.2,.8,.3,1) both}
+.step.reveal .evo{animation:fadeIn 0.8s ease-out both}
+.lock{animation:fadeIn 0.48s ease-out}
+.q.fx .opt.ok{animation:pop 0.56s ease-out}
+.q.fx .opt.bad{animation:shake 0.64s ease-out}
+.q.fx .opt.miss{animation:pop 0.56s ease-out 0.13s}
+.q.fx .exp{animation:inUp 0.56s cubic-bezier(.2,.8,.3,1) both}
+.q.fx .clh,.q.fx .dans{animation:fadeIn 0.48s ease-out both}
+.opt,.tbtn,.thm,.acct,.back,.mcard,.scard,.gcases button,.pill,.dta{transition:background-color 0.29s,border-color 0.29s,color 0.29s,transform 0.19s,box-shadow 0.32s}
 .opt:not([disabled]):active,.tbtn:active,.thm:active,.acct:active,.back:active,.gcases button:active{transform:scale(.97)}
 .mcard:hover,.scard:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgb(0 0 0 / .07)}
 .mcard:active,.scard:active{transform:translateY(0) scale(.99)}
-.opt.sel{transition:background-color .15s,border-color .15s}
-.bar i,.mbar i{transition:width .5s cubic-bezier(.2,.8,.3,1)}
-.toast{transition:opacity .25s,transform .25s;transform:translate(-50%,8px)}
+.opt.sel{transition:background-color 0.24s,border-color 0.24s}
+.bar i,.mbar i{transition:width 0.8s cubic-bezier(.2,.8,.3,1)}
+.toast{transition:opacity 0.4s,transform 0.4s;transform:translate(-50%,8px)}
 .toast.on{transform:translate(-50%,0)}
-body,.top,details.case,.mcard,.scard,.gcard,.opt,.hc,.evo,.exp,.meter{transition:background-color .3s,color .3s,border-color .3s}
+body,.top,details.case,.mcard,.scard,.gcard,.opt,.hc,.evo,.exp,.meter{transition:background-color 0.48s,color 0.48s,border-color 0.48s}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
 /* ---- Estilo compartido con REPASO (fondo con manchas de color, títulos Gloock, cuerpo Fredoka) ---- */
 body{background:
