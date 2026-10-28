@@ -75,6 +75,23 @@ main{min-width:0}
 .ref th{font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
 .ref td.n{font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
 .ref small{color:var(--muted);font-size:.8rem}
+.doseref table{min-width:900px;font-size:.82rem}
+.doseref tr.grp td{background:color-mix(in oklab,var(--c,var(--accent)) 12%,var(--card));font-weight:600;font-size:.78rem;letter-spacing:.04em;text-transform:uppercase;color:color-mix(in oklab,var(--c,var(--accent)) 70%,var(--fg))}
+.doseref td.n{white-space:normal;min-width:150px}
+.doseref td.pres{min-width:170px;color:var(--muted)}
+.doseref tbody tr:not(.grp):hover td{background:var(--soft)}
+.srcb{display:inline-block;margin-left:6px;font-family:var(--f-sans);font-size:.65rem;font-weight:600;padding:1px 6px;border-radius:4px;background:color-mix(in oklab,var(--warn) 18%,var(--card));color:var(--warn);vertical-align:1px}
+.dfilter{width:100%;max-width:360px;font:inherit;font-size:.9rem;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--fg)}
+.doseref th{position:sticky;top:0;background:var(--card)}
+@media (max-width:700px){
+  .doseref table{min-width:0}.doseref thead{display:none}
+  .doseref tbody tr{display:block;border-bottom:1px solid var(--line);padding:8px 2px}
+  .doseref tbody tr.grp{padding:0}.doseref tbody tr.grp td{display:block;padding:6px 8px}
+  .doseref tbody td{display:grid;grid-template-columns:96px minmax(0,1fr);gap:8px;border:0;padding:2px 0;min-width:0!important}
+  .doseref tbody td.fd{display:block;font-size:.95rem;padding-bottom:4px}
+  .doseref tbody td[data-l]::before{content:attr(data-l);font-size:.7rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-family:var(--f-sans);padding-top:2px}
+  .doseref tbody td:is([data-l="Máximo"],[data-l="Duración"],[data-l="Presentación"]):is(:empty){display:none}
+}
 .cases{display:flex;flex-direction:column;gap:12px}
 details.case{background:var(--card);border:1px solid var(--line);border-radius:var(--r)}
 details.case[open]{border-color:color-mix(in oklab,var(--c) 45%,var(--line))}
@@ -320,7 +337,63 @@ const SECTIONS=[
  ["Problemas endocrinológicos","#455A64"],["Medicina psicosocial","#C2185B"],["Enfermedades en contexto de inundación","#00695C"],["Examen integrador: familias en la unidad sanitaria","#263238"],["Dosis pediátricas: cálculo en ml","#7CB342"]];
 const SHORT=["Pediatría y adulto mayor","Salud sexual","Vía aérea sup. y ojo","Respiratorio","Piel","FRCV y ECNT","Cardiovascular","Digestivo","Genitourinario","Anemia y dolor","Osteoarticular","Neurología","Endocrinología","Psicosocial","Inundación","Examen integrador","Dosis pediátricas"];
 const TAGS={T:"Teoría",P:"Teórico-práctica",A:"Anamnesis",E:"Examen físico",S:"Estudios",PR:"Problematización",PL:"Plan de acción",C:"Cálculo de dosis"};
-const SECINTRO={16:"<div class=\"ref\"><h3>Cómo calcular</h3><div class=\"formula\">Dosis (mg) = mg/kg × peso · Volumen (ml) = dosis (mg) ÷ concentración (mg/ml)<br>Concentración: 250 mg/5 ml = 50 mg/ml · 2 % = 20 mg/ml · 4 % = 40 mg/ml</div><p>Dosis según el cuadernillo. Siempre verificar que no se supere la dosis de adulto y redondear a un volumen medible.</p><div class=\"tw\"><table><thead><tr><th>Fármaco</th><th>Dosis</th><th>Presentación</th><th>mg/ml</th></tr></thead><tbody><tr><td><b>Amoxicilina</b></td><td>OMA 90 mg/kg/día c/12 h · NAC 80-100 c/8 h · faringitis 50 en 2 tomas · sinusitis 80</td><td>Susp. 250 mg/5 ml · 500 mg/5 ml</td><td class=\"n\">50 · 100</td></tr><tr><td><b>Amoxicilina-clavulánico</b></td><td>ITU 20-40 mg/kg/día en 3 · mordedura 40 en 3</td><td>Susp. 250/62,5 mg/5 ml</td><td class=\"n\">50 (amoxicilina)</td></tr><tr><td><b>Cefalexina</b></td><td>ITU 50-100 mg/kg/día en 2 · impétigo extenso 25-50 c/6 h (SADI 2025; graves 50-100)</td><td>Susp. 250 mg/5 ml · 500 mg/5 ml</td><td class=\"n\">50 · 100</td></tr><tr><td><b>Azitromicina</b></td><td>Faringitis 12 mg/kg/día 5 d · OMA 10 5 d · diarrea 10 3 d (máx. 500 mg)</td><td>Jarabe 200 mg/5 ml</td><td class=\"n\">40</td></tr><tr><td><b>Eritromicina</b></td><td>NAC (alergia) 50 mg/kg/día en 3-4</td><td>Susp. 200 mg/5 ml</td><td class=\"n\">40</td></tr><tr><td><b>Metronidazol</b></td><td>Giardiasis 15 mg/kg/día en 3, 5 d</td><td>Susp. 125 mg/5 ml</td><td class=\"n\">25</td></tr><tr><td><b>TMS</b></td><td>Diarrea 8-10 mg/kg/día de TMP c/12 h</td><td>Jarabe 40/200 mg/5 ml</td><td class=\"n\">8 (de TMP)</td></tr><tr><td><b>Ibuprofeno</b></td><td>10 mg/kg c/6-8 h (máx. 600 mg/dosis; 40 mg/kg/día); > 6 meses</td><td>2 % · 4 %</td><td class=\"n\">20 · 40</td></tr><tr><td><b>Paracetamol</b></td><td>10-15 mg/kg c/4-6 h (≤ 5 dosis; máx. 75 mg/kg/día)</td><td>Gotas: 1 gota = 5 mg</td><td class=\"n\">100 (20 gotas/ml)</td></tr><tr><td><b>Salbutamol nebulizado</b></td><td>0,15-0,25 mg/kg (½-1 gota/kg; mín. 3, máx. 20 gotas) en 3 ml SF</td><td>Solución 0,5 %: 1 gota = 0,25 mg</td><td class=\"n\">5</td></tr><tr><td><b>Ondansetrón</b></td><td>0,15 mg/kg/dosis c/8 h (máx. 8 mg)</td><td>Ampolla 4 mg/2 ml (puede darse VO)</td><td class=\"n\">2</td></tr><tr><td><b>Hierro polimaltosado</b></td><td>Tratamiento 3-6 mg/kg/día · profilaxis 1 mg/kg/día</td><td>Gotas: 1 gota = 2,5 mg de Fe</td><td class=\"n\">50</td></tr><tr><td><b>Cetirizina</b></td><td>6-12 años 5 mg c/12 h · 2-6 años 2,5 mg c/12 h</td><td>Gotas 10 mg/ml: 1 gota = 0,5 mg</td><td class=\"n\">10</td></tr></tbody></table></div><small>Las presentaciones son las de uso frecuente en Argentina; las concentraciones pueden variar según la marca: verificar el envase.</small></div>"};
+// ---- Tabla de dosis pediátricas (fuente: cuadernillo 2026 salvo indicación; * = presentación de uso habitual, no figura en el cuadernillo)
+const DOSES=[
+ ["Antibióticos"],
+ ["Amoxicilina","OMA","90 mg/kg/día","c/12 h","10 días (5 si > 2 años sin gravedad)","—","250 mg/5 ml = 50 mg/ml · 500 mg/5 ml = 100 mg/ml","C"],
+ ["Amoxicilina","NAC ambulatoria (> 3 meses)","80-100 mg/kg/día","c/8 h","10 días","—","ídem","C"],
+ ["Amoxicilina","Faringitis (2ª opción)","50 mg/kg/día","c/12 h","10 días","—","ídem","C"],
+ ["Amoxicilina","Sinusitis sin mejoría a las 48-72 h","80 mg/kg/día","c/8-12 h","10 días (14-21 si no es leve)","—","ídem","C"],
+ ["Amoxicilina","ITU baja > 3 años (alternativa)","50-60 mg/kg/día","c/8 h","3 días","—","ídem","C"],
+ ["Penicilina V","Faringitis (1ª elección)","50.000 U/kg/día","c/12 h","10 días","dosis de adulto","—","C"],
+ ["Penicilina G benzatínica","Faringitis sin vía oral","50.000 U/kg","única IM","—","1.200.000 U","—","C"],
+ ["Amoxicilina-clavulánico","ITU (> 2 meses)","20-40 mg/kg/día (de amoxicilina)","c/8 h","7-10 días (alta); 3-5 (baja)","—","250/62,5 mg/5 ml = 50 mg/ml de amoxicilina","C"],
+ ["Amoxicilina-clavulánico","Mordedura","40 mg/kg/día","c/8 h","3-5 días profilaxis; 5-7 si hay infección (SADI)","—","ídem","C"],
+ ["Amoxicilina-clavulánico","Sinusitis sin respuesta a amoxicilina","80 mg/kg/día","⚠ el cuadernillo no indica el intervalo","10 días","—","ídem","C"],
+ ["Cefalexina","ITU (> 2 meses)","50-100 mg/kg/día","c/12 h","7-10 días (alta); 3-5 (baja)","—","250 mg/5 ml = 50 mg/ml · 500 mg/5 ml = 100 mg/ml","C"],
+ ["Cefalexina","Impétigo extenso / IPPB leve","Cuadernillo: 50-100 mg/kg/día · SADI: 25-50 mg/kg/día (50-100 en graves)","c/6 h","Cuadernillo 7-10 días · SADI 5-7 días","3 g/día (SADI)","ídem","C+SADI"],
+ ["Azitromicina","Faringitis (alergia a penicilina)","12 mg/kg/día","c/24 h","5 días","500 mg/día","200 mg/5 ml = 40 mg/ml","C"],
+ ["Azitromicina","OMA (alergia a penicilina)","10 mg/kg/día","c/24 h","5 días","500 mg/día","ídem","C"],
+ ["Azitromicina","Diarrea bacteriana (brotes o casos graves) y disentería","10 mg/kg/día","c/24 h","3 días","500 mg/día","ídem","C"],
+ ["Azitromicina","Sospecha de cólera","20 mg/kg","dosis única","—","1 g","ídem","C"],
+ ["Claritromicina","Faringitis (alergia)","7,5 mg/kg/día ⚠","c/12 h","10 días","—","—","C"],
+ ["Claritromicina","Sinusitis (alergia)","15 mg/kg/día","⚠ no indicado","10 días (14-21 si no es leve)","—","—","C"],
+ ["Eritromicina","NAC (alergia)","50 mg/kg/día","c/6-8 h (3-4 tomas)","10 días","—","200 mg/5 ml = 40 mg/ml *","C"],
+ ["TMS","Diarrea bacteriana y disentería (alternativa)","8-10 mg/kg/día de TMP ⚠","c/12 h","3-5 días","—","40/200 mg/5 ml = 8 mg/ml de TMP","C"],
+ ["TMS","ITU baja > 3 años","6-12 mg/kg/día de TMP","c/12 h","3 días","—","ídem","C"],
+ ["Metronidazol","Giardiasis","15 mg/kg/día","c/8 h","5 días","—","125 mg/5 ml = 25 mg/ml *","C"],
+ ["Clindamicina","Piel (alergia a penicilina)","10-13 mg/kg/dosis","c/6-8 h","10 días","—","—","C"],
+ ["Antiparasitarios (dosis fija, no por peso)"],
+ ["Mebendazol","Oxiuriasis","100 mg","única; repetir a los 15 días","toda la familia","—","comprimido 100 mg","C"],
+ ["Albendazol","Ascaridiasis (≥ 1 año)","400 mg","única; repetir a los 7-10 días","—","—","comprimido 400 mg","C"],
+ ["Analgésicos y antitérmicos"],
+ ["Paracetamol","Fiebre o dolor (desde el período neonatal)","10-15 mg/kg/dosis","c/4-6 h (≤ 5 dosis/día)","—","800 mg-1 g/dosis · 75 mg/kg/día o 4 g/día","gotas 100 mg/ml (1 gota = 5 mg)","C"],
+ ["Ibuprofeno","Fiebre o dolor (> 6 meses)","10 mg/kg/dosis (5-10 en faringitis)","c/6-8 h (≤ 4 dosis/día)","—","600 mg/dosis · 40 mg/kg/día o 2,4 g/día","2 % = 20 mg/ml · 4 % = 40 mg/ml","C"],
+ ["Respiratorio"],
+ ["Salbutamol aerosol","Broncoobstrucción","2 puff (200 µg) con aerocámara","c/20 min hasta 3 dosis en la crisis; luego c/4-6 h","—","—","100 µg/puff","C"],
+ ["Salbutamol nebulizado","Broncoobstrucción","0,15-0,25 mg/kg (½-1 gota/kg) en 3 ml de SF","c/4-6 h (c/20 min en la crisis)","—","mín. 3 · máx. 20 gotas (5 mg)","solución 0,5 % = 5 mg/ml (1 gota = 0,25 mg)","C"],
+ ["Meprednisona","Crisis asmática","1-2 mg/kg/día","en 3 dosis","3-5 días","40 mg/día","gotas 4 mg/ml (20 gotas = 4 mg)","C"],
+ ["Hidrocortisona IV","Crisis grave (internación)","5-10 mg/kg/dosis","c/6 h","—","300 mg/dosis","—","C"],
+ ["Oseltamivir","Influenza (≥ 12 meses)","< 15 kg 30 mg · 15-23 kg 45 mg · 24-40 kg 60 mg · > 40 kg 75 mg","c/12 h","5 días","—","—","C"],
+ ["Gastrointestinal"],
+ ["Sales de rehidratación oral","Diarrea","Plan A: 10 ml/kg por deposición o vómito · Plan B: 50-100 ml/kg","Plan B en 4 h","—","—","—","C"],
+ ["Ondansetrón","Vómitos en diarrea aguda","0,15 mg/kg/dosis","c/8 h","uso selectivo","8 mg/dosis","ampolla 4 mg/2 ml = 2 mg/ml (puede darse VO)","C"],
+ ["Antihistamínicos"],
+ ["Cetirizina","Rinitis, urticaria (≥ 6 meses)","6-23 meses 2,5 mg/día · 2-6 años 2,5 mg c/12 h · 6-12 años 5 mg c/12 h · > 12 años 10 mg/día","según edad","—","—","gotas 10 mg/ml (1 gota = 0,5 mg) *","C"],
+ ["Loratadina","Rinitis, urticaria (≥ 2 años)","< 30 kg 5 mg/día · > 30 kg 10 mg/día","c/24 h","—","—","—","C"],
+ ["Difenhidramina","Prurito (varicela)","3-5 mg/kg/día","—","—","—","—","C"],
+ ["Hierro (dosis en mg de hierro elemental)"],
+ ["Hierro","Profilaxis, término sin factores de riesgo","1 mg/kg/día","c/24 h","de los 4 a los 12 meses","—","polimaltosado gotas 50 mg/ml (1 gota = 2,5 mg) ⚠ la concentración varía según el producto","C"],
+ ["Hierro","Profilaxis con factores de riesgo (prematuro, NBI, leche de vaca < 6 meses, anemia materna)","2 mg/kg/día","c/24 h","de los 2 a los 12 meses","—","ídem","C"],
+ ["Hierro","Tratamiento de la anemia ferropénica","3-6 mg/kg/día (polimaltosado < 1 año: 2 gotas/kg/día)","en 1-3 tomas","hasta normalizar la Hb y luego el mismo tiempo","—","ídem","C"],
+];
+function buildDoseRef(){const h=s=>String(s).replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
+ let rows="";const lastP={};DOSES.forEach(r=>{if(r.length>1){if(r[6]==="ídem")r=r.slice(0,6).concat([lastP[r[0]]||"—"],r.slice(7));else lastP[r[0]]=r[6];}if(r.length===1){rows+=`<tr class="grp"><td colspan="7">${h(r[0])}</td></tr>`;return;}
+  const src=r[7]==="C"?"":`<span class="srcb">${h(r[7].replace("C+",""))}</span>`;
+  rows+=`<tr data-q="${h((r[0]+" "+r[1]).toLowerCase())}"><td class="fd"><b>${h(r[0])}</b></td><td data-l="Indicación">${h(r[1])}</td><td class="n" data-l="Dosis">${h(r[2])}${src}</td><td data-l="Intervalo">${h(r[3])}</td><td data-l="Duración">${h(r[4])}</td><td data-l="Máximo">${h(r[5])}</td><td class="pres" data-l="Presentación">${h(r[6])}</td></tr>`;});
+ return `<div class="ref doseref"><h3>Cómo calcular</h3><div class="formula">Dosis (mg) = mg/kg × peso · si es «por día», dividir por el número de tomas<br>Volumen (ml) = dosis (mg) ÷ concentración (mg/ml) · 250 mg/5 ml = 50 mg/ml · 2 % = 20 mg/ml<br>Gotas: 1 ml ≈ 20 gotas · nunca superar la dosis máxima ni la de adulto · redondear a un volumen medible</div><input type="search" class="dfilter" placeholder="Buscar fármaco o indicación…" aria-label="Buscar en la tabla de dosis"><div class="tw"><table><thead><tr><th>Fármaco</th><th>Indicación</th><th>Dosis</th><th>Intervalo</th><th>Duración</th><th>Máximo</th><th>Presentación · concentración</th></tr></thead><tbody>${rows}</tbody></table></div><small>Fuente: cuadernillo 2026; donde dice SADI, Guía de infecciones de piel y partes blandas 2025. * Presentación de uso habitual en Argentina que no figura en el cuadernillo: verificar el envase. ⚠ Claritromicina: el cuadernillo da 7,5 mg/kg/día en faringitis y 15 mg/kg/día en sinusitis; 7,5 mg/kg suele ser la dosis por toma (15 mg/kg/día en 2 tomas). ⚠ TMS en diarrea: el cuadernillo la rotula como «ciprofloxacina», pero la dosis y el jarabe corresponden a TMS.</small></div>`;}
+
+const SECINTRO={16:buildDoseRef()};
 const CASES=[];
 function C(s,t,v,q,img){const id=CASES.length;q.forEach((x,i)=>x.key=id+"-"+i);CASES.push({s,t,v,q,img,id,nd:0});}
 function D(i,arr){const c=CASES[i];if(!c)return;arr.forEach((x,j)=>x.key=i+"-d"+(c.nd+j));c.q.splice(c.nd,0,...arr);c.nd+=arr.length;}
@@ -2759,7 +2832,7 @@ C(16,"Iara, 10 meses, 9 kg",
 [
 Q("C","Tratamiento con 3-6 mg/kg/día de hierro elemental: ¿cuántos mg/día?","27-54 mg/día","3-6 mg/día","90-180 mg/día","9 mg/día","3-6 × 9 = 27-54 mg/día en 1-3 tomas."),
 Q("C","¿Cuántas gotas por día de polimaltosado (2,5 mg/gota)?","≈ 11-22 gotas/día","2 gotas/día","50 gotas/día","100 gotas/día","27-54 mg ÷ 2,5 ≈ 11-22 gotas (el cuadernillo indica hasta 1 año 2 gotas/kg/día = 18 gotas)."),
-Q("C","Para comparar: ¿cuál sería la dosis de profilaxis en un lactante de término de 9 kg?","1 mg/kg/día = 9 mg (≈ 4 gotas)","3 mg/kg/día","10 mg/kg/día","No corresponde profilaxis","Profilaxis RN término: 1 mg/kg/día de 2 a 12 meses."),
+Q("C","Para comparar: ¿cuál sería la dosis de profilaxis en un lactante de término de 9 kg?","1 mg/kg/día = 9 mg (≈ 4 gotas)","3 mg/kg/día","10 mg/kg/día","No corresponde profilaxis","Cuadernillo: profilaxis en el nacido a término sin factores de riesgo, 1 mg/kg/día de los 4 a los 12 meses; con factores de riesgo (prematurez, bajo nivel socioeconómico, leche de vaca antes de los 6 meses, anemia materna), 2 mg/kg/día de los 2 a los 12 meses. 9 mg ÷ 2,5 mg/gota ≈ 4 gotas."),
 Q("T","¿Qué define una prueba terapéutica positiva?","Reticulocitos ≥ 2 % a los 5-10 días o ↑ Hb ≥ 1 g/dl a los 30 días","Hb normal a la semana","Heces negras","Ferritina normal a las 48 h","Prueba terapéutica positiva según el cuadernillo."),
 Q("T","¿Cómo se administra el hierro?","Lejos de lácteos, té y mate; con jugo de cítricos si es posible","Mezclado en la mamadera de leche","Con el té de la merienda","Con calcio","Lácteos, té y mate reducen la absorción.")
 ]);
@@ -3214,6 +3287,8 @@ function renderSection(openId){
   document.documentElement.style.setProperty("--c",col);setAccent(col);
   const list=CASES.filter(c=>c.s===s);
   $("#secintro").innerHTML=SECINTRO[s]||"";
+  {const f=document.querySelector("#secintro .dfilter");if(f)f.oninput=()=>{const v=f.value.trim().toLowerCase();let lastG=null,any=false;
+    document.querySelectorAll("#secintro tbody tr").forEach(tr=>{if(tr.classList.contains("grp")){if(lastG)lastG.hidden=!any;lastG=tr;any=false;return;}const ok=!v||tr.dataset.q.includes(v);tr.hidden=!ok;if(ok)any=true;});if(lastG)lastG.hidden=!any;};}
   $("#sechead").innerHTML=`<div><span class="num">Sección ${s+1} de ${SECTIONS.length} · ${list.length} casos</span><h2>${esc(name)}</h2></div>
    <div class="filters"><label for="pend"><input type="checkbox" id="pend" ${st.pend?"checked":""}> Sólo casos sin terminar</label></div>`;
   $("#pend").onchange=e=>{st.pend=e.target.checked;save();renderSection();};
