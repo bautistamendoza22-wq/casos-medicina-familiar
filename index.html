@@ -9,21 +9,25 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&family=Shrikhand&family=Gloock&family=JetBrains+Mono:wght@400;600&display=swap">
 <style>
 /* Layout: hoja de evolución clínica — índice de secciones a la izquierda, casos como fichas apiladas a la derecha */
 :root{
-  --bg:#e8e3d7; --card:#f5f1e6; --fg:#2a2620; --muted:#635d52; --line:#d5cdbb; --soft:#ebe5d7;
-  --accent:#145c50; --accent-ink:#ffffff; --accent-soft:#dbe6dc;
+  --bg:#E8E6E1; --card:#F7F6F3; --fg:#1F2430; --muted:#5A6070; --line:#D3D0C8; --soft:#EFEDE8;
+  --accent:#556B2F; --accent-ink:#ffffff; --accent-soft:#E2E8D2;
+  --g1:#6B7B3A; --g2:#F2B48A; --g3:#A7B77F; --g4:#E8C46A;
   --ok:#1d7a3e; --ok-soft:#dfecd9; --bad:#b3261e; --bad-soft:#f1dcd3; --warn:#8a5a00;
-  --f-sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --f-serif:"IBM Plex Serif",Georgia,"Times New Roman",serif;
-  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
-  --r:10px; color-scheme:light;
+  --f-sans:"Fredoka",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-display:"Gloock",Georgia,"Times New Roman",serif;
+  --f-serif:var(--f-sans);
+  --f-big:"Shrikhand",var(--f-display);
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  --r:12px; color-scheme:light;
 }
 :root[data-theme="dark"]{
-  --bg:#000000; --card:#121212; --fg:#ece8e1; --muted:#a29d94; --line:#2c2c2c; --soft:#1b1b1b;
-  --accent:#5fb3a2; --accent-ink:#000000; --accent-soft:#16302b;
+  --bg:#000000; --card:#121410; --fg:#E8EADF; --muted:#A3A795; --line:#2B2F24; --soft:#1A1D15;
+  --accent:#B4C47A; --accent-ink:#000000; --accent-soft:#232A17;
+  --g1:#3F4A1F; --g2:#5A3A22; --g3:#2F3A1E; --g4:#4A3F18;
   --ok:#6fd38f; --ok-soft:#12301d; --bad:#f08a80; --bad-soft:#3a1715; --warn:#e2b257; color-scheme:dark}
 :root[data-theme="dark"] .mcard:hover{box-shadow:none}
 :root[data-theme="dark"] .tag.A,:root[data-theme="dark"] .tag.E,:root[data-theme="dark"] .tag.S,:root[data-theme="dark"] .tag.PR,:root[data-theme="dark"] .tag.PL,:root[data-theme="dark"] .tag.C{color:color-mix(in oklab,var(--c) 45%,var(--fg));background:color-mix(in oklab,var(--c) 22%,var(--card))}
@@ -207,6 +211,38 @@ body[data-v="home"] .meter,body[data-v="home"] #rnd,body[data-v="home"] #resetWr
   .bar{width:90px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* ---- Estilo compartido con REPASO (fondo con manchas de color, títulos Gloock, cuerpo Fredoka) ---- */
+body{background:
+  radial-gradient(55vw 45vh at 92% 4%,color-mix(in oklab,var(--g1) 26%,transparent),transparent 70%),
+  radial-gradient(45vw 55vh at -5% 55%,color-mix(in oklab,var(--g2) 30%,transparent),transparent 70%),
+  radial-gradient(50vw 45vh at 80% 100%,color-mix(in oklab,var(--g3) 24%,transparent),transparent 70%),
+  radial-gradient(35vw 35vh at 30% -5%,color-mix(in oklab,var(--g4) 26%,transparent),transparent 70%),
+  var(--bg);background-attachment:fixed;font-size:16px}
+body::before{background:transparent}
+.top{position:static;background:transparent;border-bottom:0}
+body[data-v="cases"] .top{border-bottom:0}
+.top-in{padding-block:clamp(18px,4vw,36px) 6px;gap:12px 16px;align-items:center}
+.brand h1{font-family:var(--f-display);font-weight:400;font-size:clamp(2rem,6vw,2.9rem);line-height:1.05;color:var(--accent)}
+.sec-head h2,.vhead h2,.mcard h3,.ref h3,.gcard h3{font-family:var(--f-display);font-weight:400}
+.sec-head h2{font-size:clamp(1.6rem,4.5vw,2.1rem);color:color-mix(in oklab,var(--c) 75%,var(--fg))}
+.vhead h2{font-size:clamp(1.7rem,5vw,2.2rem)}
+.pt b{font-family:var(--f-display);font-weight:400;font-size:1.15rem}
+.hc p,.evo p{font-family:var(--f-sans);font-size:1rem}
+.tbtn,.thm,.acct,.back{font-weight:600;padding:8px 14px;border-radius:8px;background:var(--card)}
+.tbtn.primary{background:var(--accent);color:var(--accent-ink)}
+.qt{font-weight:600}
+.meter{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 12px}
+.bar{background:var(--line);height:8px;border-radius:99px}
+.bar i,.mbar i{border-radius:99px}
+.mbar{height:8px;background:var(--line);border-radius:99px}
+details.case,.mcard,.scard,.gcard,.ref,.empty{border-radius:12px}
+.mcard .big{font-family:var(--f-big);font-weight:400;font-size:clamp(2rem,6vw,2.6rem);line-height:1;color:var(--accent)}
+.mcard .big small{font-size:.55em;color:var(--muted)}
+.repl{text-decoration:none;display:inline-flex;align-items:center;gap:6px;color:var(--fg)}
+body[data-v="cases"] .brand h1{color:var(--accent)}
+.top-in{max-width:980px}
+.brand{flex:1 1 520px}
+@media (max-width:600px){.top-in{gap:8px}.tbtn,.thm,.acct{padding:7px 11px;font-size:.82rem}.meter{width:100%;justify-content:space-between}.meter .bar{flex:1}}
 </style>
 </head>
 <body>
@@ -214,6 +250,7 @@ body[data-v="home"] .meter,body[data-v="home"] #rnd,body[data-v="home"] #resetWr
 <header class="top"><div class="top-in">
   <div class="brand"><h1>Casos de Medicina Familiar</h1></div>
   <div class="meter"><span id="gtxt">0 / 0</span><div class="bar"><i id="gbar"></i></div><span id="gpct">—</span></div>
+  <a class="tbtn repl" href="https://bautistamendoza22-wq.github.io/REPASO/">Repaso ↗</a>
   <button class="tbtn primary" id="rnd" type="button">Caso al azar</button>
   <span id="acctWrap"></span>
   <button class="thm" id="thm" type="button" aria-label="Cambiar tema"></button>
@@ -3194,7 +3231,7 @@ function updRepG(){const a=$("#repG");if(!a)return;let s="General";
 function statsFor(m,filter){const prev=st.mode;st.mode=m;let done=0,n=0,qa=0,ok=0,it=0,itn=0;
   CASES.filter(filter||(()=>true)).forEach(c=>{const x=caseStat(c);n++;qa+=x.ans;ok+=x.ok;it+=x.it;itn+=x.itn;if(x.ans===x.n)done++;});st.mode=prev;return{done,n,qa,ok,it,itn};}
 function renderHome(){const card=(m,desc)=>{const x=statsFor(m);const pct=m==="dev"?(x.itn?Math.round(x.it/x.itn*100)+"% de ítems":"sin empezar"):(x.qa?Math.round(x.ok/x.qa*100)+"% correctas":"sin empezar");
-    return`<button type="button" class="mcard" data-m="${m}"><h3>${MNAME[m]}</h3><p>${desc}</p><span class="stat"><span>${x.done}/${x.n} casos</span><span class="mbar"><i style="width:${x.n?x.done/x.n*100:0}%"></i></span><span>${pct}</span></span><span class="tbtn primary go">Entrar</span></button>`;};
+    return`<button type="button" class="mcard" data-m="${m}"><h3>${MNAME[m]}</h3><p>${desc}</p><b class="big">${x.done}<small>/${x.n}</small></b><span class="stat"><span>casos terminados</span><span class="mbar"><i style="width:${x.n?x.done/x.n*100:0}%"></i></span><span>${pct}</span></span><span class="tbtn primary go">Entrar</span></button>`;};
   $("#home").innerHTML=`<div class="vhead"><h2>Elegí el modo</h2><p>Los dos modos usan los mismos casos y secciones; el progreso de cada uno se guarda por separado.</p></div><div class="modes">${card("mc","Leés el caso y elegís entre opciones. Algunas preguntas tienen más de una respuesta correcta.")}${card("dev","Escribís la respuesta y la corregís vos mismo con una lista de cotejo: tildás los ítems que incluiste.")}</div>`;
   if(SYNC_OK&&!fbUser&&fb)$("#home").insertAdjacentHTML("beforeend",`<div class="syncnote"><span>Iniciá sesión con tu cuenta de Google para guardar el progreso y seguir en otro dispositivo.</span><button type="button" class="tbtn primary" id="login2">Iniciar sesión con Google</button></div>`);if($("#login2"))$("#login2").onclick=login;
   $("#home").insertAdjacentHTML("beforeend",`<div class="updlink"><span>Contenido del cuadernillo 2026, revisado con guías 2025-2026.</span><button type="button" class="tbtn" id="goUpd">Ver actualizaciones</button></div>`);$("#goUpd").onclick=()=>show("upd");
@@ -3208,14 +3245,15 @@ function renderCrumbs(){$("#crumbs").innerHTML=`<button type="button" class="bac
   $("#bkS").onclick=()=>show("secs");$("#chM").onclick=()=>show("home");}
 const RS=document.documentElement.style;
 let CURCOL=null;
-const TPROPS=["--accent","--accent-soft","--bg","--card","--soft","--line"];
+const TPROPS=["--accent","--accent-soft","--bg","--card","--soft","--line","--g1","--g3"];
 function setAccent(col){CURCOL=col;TPROPS.forEach(p=>RS.removeProperty(p));if(!col)return;
   if(st.theme==="dark"){
     RS.setProperty("--accent",`color-mix(in oklab, ${col} 55%, #fff)`);RS.setProperty("--accent-soft",`color-mix(in oklab, ${col} 24%, #121212)`);
+    RS.setProperty("--g1",`color-mix(in oklab, ${col} 45%, #000)`);RS.setProperty("--g3",`color-mix(in oklab, ${col} 35%, #000)`);
     RS.setProperty("--card",`color-mix(in oklab, ${col} 7%, #121212)`);RS.setProperty("--soft",`color-mix(in oklab, ${col} 11%, #161616)`);RS.setProperty("--line",`color-mix(in oklab, ${col} 22%, #2c2c2c)`);
   }else{
     RS.setProperty("--accent",`color-mix(in oklab, ${col} 80%, #000)`);RS.setProperty("--accent-soft",`color-mix(in oklab, ${col} 13%, #fff)`);
-    RS.setProperty("--bg",`color-mix(in oklab, ${col} 13%, #f6f4f0)`);RS.setProperty("--card",`color-mix(in oklab, ${col} 4%, #fbfaf8)`);
+    RS.setProperty("--bg",`color-mix(in oklab, ${col} 13%, #f6f4f0)`);RS.setProperty("--g1",col);RS.setProperty("--g3",`color-mix(in oklab, ${col} 55%, #fff)`);RS.setProperty("--card",`color-mix(in oklab, ${col} 4%, #fbfaf8)`);
     RS.setProperty("--soft",`color-mix(in oklab, ${col} 8%, #f3f1ec)`);RS.setProperty("--line",`color-mix(in oklab, ${col} 18%, #dcd8cf)`);}}
 function applyTheme(){document.documentElement.dataset.theme=st.theme==="dark"?"dark":"light";const b=$("#thm");if(b)b.textContent=st.theme==="dark"?"☀ Modo claro":"☾ Modo oscuro";setAccent(CURCOL);}
 let VIEW="home";
