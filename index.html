@@ -210,7 +210,45 @@ body[data-v="home"] .meter,body[data-v="home"] #rnd,body[data-v="home"] #resetWr
   .opts,.exp{padding-left:0;margin-left:0}
   .bar{width:90px}
 }
-@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* ---- animaciones ---- */
+@keyframes inUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.025)}100%{transform:scale(1)}}
+@keyframes shake{0%,100%{transform:none}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(2px)}}
+@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.venter{animation:inUp .35s cubic-bezier(.2,.8,.3,1) both}
+.modes>.mcard,.secs>.scard,#cases>details.case,.updlist>.gcard{animation:inUp .4s cubic-bezier(.2,.8,.3,1) both}
+.modes>.mcard:nth-child(2){animation-delay:.06s}
+.secs>.scard:nth-child(2),#cases>details.case:nth-child(2),.updlist>.gcard:nth-child(2){animation-delay:.03s}
+.secs>.scard:nth-child(3),#cases>details.case:nth-child(3),.updlist>.gcard:nth-child(3){animation-delay:.06s}
+.secs>.scard:nth-child(4),#cases>details.case:nth-child(4),.updlist>.gcard:nth-child(4){animation-delay:.09s}
+.secs>.scard:nth-child(5),#cases>details.case:nth-child(5),.updlist>.gcard:nth-child(5){animation-delay:.12s}
+.secs>.scard:nth-child(6),#cases>details.case:nth-child(6),.updlist>.gcard:nth-child(6){animation-delay:.15s}
+.secs>.scard:nth-child(7),#cases>details.case:nth-child(7),.updlist>.gcard:nth-child(7){animation-delay:.18s}
+.secs>.scard:nth-child(8),#cases>details.case:nth-child(8),.updlist>.gcard:nth-child(8){animation-delay:.21s}
+.secs>.scard:nth-child(n+9),#cases>details.case:nth-child(n+9){animation-delay:.24s}
+.sec-head{animation:fadeIn .3s ease-out both}
+details.case[open]>.body{animation:inUp .3s cubic-bezier(.2,.8,.3,1) both}
+details.case>summary{transition:background-color .2s}
+details.case>summary:hover{background:color-mix(in oklab,var(--c,var(--accent)) 6%,transparent)}
+.step.reveal{animation:inUp .4s cubic-bezier(.2,.8,.3,1) both}
+.step.reveal .evo{animation:fadeIn .5s ease-out both}
+.lock{animation:fadeIn .3s ease-out}
+.q.fx .opt.ok{animation:pop .35s ease-out}
+.q.fx .opt.bad{animation:shake .4s ease-out}
+.q.fx .opt.miss{animation:pop .35s ease-out .08s}
+.q.fx .exp{animation:inUp .35s cubic-bezier(.2,.8,.3,1) both}
+.q.fx .clh,.q.fx .dans{animation:fadeIn .3s ease-out both}
+.opt,.tbtn,.thm,.acct,.back,.mcard,.scard,.gcases button,.pill,.dta{transition:background-color .18s,border-color .18s,color .18s,transform .12s,box-shadow .2s}
+.opt:not([disabled]):active,.tbtn:active,.thm:active,.acct:active,.back:active,.gcases button:active{transform:scale(.97)}
+.mcard:hover,.scard:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgb(0 0 0 / .07)}
+.mcard:active,.scard:active{transform:translateY(0) scale(.99)}
+.opt.sel{transition:background-color .15s,border-color .15s}
+.bar i,.mbar i{transition:width .5s cubic-bezier(.2,.8,.3,1)}
+.toast{transition:opacity .25s,transform .25s;transform:translate(-50%,8px)}
+.toast.on{transform:translate(-50%,0)}
+body,.top,details.case,.mcard,.scard,.gcard,.opt,.hc,.evo,.exp,.meter{transition:background-color .3s,color .3s,border-color .3s}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
 /* ---- Estilo compartido con REPASO (fondo con manchas de color, títulos Gloock, cuerpo Fredoka) ---- */
 body{background:
   radial-gradient(55vw 45vh at 92% 4%,color-mix(in oklab,var(--g1) 26%,transparent),transparent 70%),
@@ -3136,7 +3174,7 @@ function drawQ(c,q,el,d){
   q.ord.forEach((oi,pos)=>{const bt=document.createElement("button");bt.type="button";bt.className="opt";
     bt.innerHTML=`<span class="k">${"abcdefghij"[pos]})</span><span>${esc(q.opts[oi])}</span>`;
     if(a!==undefined){bt.disabled=true;if(oi===0)bt.classList.add("ok");else if(oi===a)bt.classList.add("bad");else bt.classList.add("dim");}
-    else bt.onclick=()=>{const y=window.scrollY;st.a[q.key]=oi;save();drawQ(c,q,el,d);after(c,el,d,y);};
+    else bt.onclick=()=>{const y=window.scrollY;st.a[q.key]=oi;save();drawQ(c,q,el,d);fx(el);after(c,el,d,y);};
     opts.appendChild(bt);});
   if(a===undefined){exp.hidden=true;exp.className="exp";}
   else{exp.hidden=false;exp.className="exp "+(a===0?"ok":"bad");exp.innerHTML=`<b>${a===0?"Correcto.":"Incorrecto. La respuesta es: "+esc(q.opts[0])}</b>${esc(q.exp)}`;}
@@ -3154,7 +3192,7 @@ function drawM(c,q,el,d){
       bt.onclick=()=>{const y=window.scrollY;sel.has(oi)?sel.delete(oi):sel.add(oi);drawM(c,q,el,d);if(Math.abs(window.scrollY-y)>2)window.scrollTo(0,y);};}
     opts.appendChild(bt);});
   if(a===undefined){const cf=document.createElement("button");cf.type="button";cf.className="tbtn primary conf";cf.textContent=sel.size?`Confirmar (${sel.size})`:"Confirmar";cf.disabled=!sel.size;
-    cf.onclick=()=>{const y=window.scrollY;st.a[q.key]=[...sel].sort((x,z)=>x-z);delete SEL[q.key];save();drawM(c,q,el,d);after(c,el,d,y);};
+    cf.onclick=()=>{const y=window.scrollY;st.a[q.key]=[...sel].sort((x,z)=>x-z);delete SEL[q.key];save();drawM(c,q,el,d);fx(el);after(c,el,d,y);};
     opts.appendChild(cf);exp.hidden=true;exp.className="exp";}
   else{const ok=isOk(q,a);const hit=a.filter(i=>i<q.nOk).length,wrong=a.length-hit;
     exp.hidden=false;exp.className="exp "+(ok?"ok":"bad");
@@ -3180,14 +3218,15 @@ function drawD(c,q,el,d){
     opts.appendChild(bt);});
   if(!r.f){const row=document.createElement("div");row.style.cssText="display:flex;gap:8px;flex-wrap:wrap";
     const ok=document.createElement("button");ok.type="button";ok.className="tbtn primary";ok.textContent=`Listo (${chk.size}/${items.length})`;
-    ok.onclick=()=>{const y=window.scrollY;r.f=1;st.d[q.key]=r;save();drawD(c,q,el,d);after(c,el,d,y);};
+    ok.onclick=()=>{const y=window.scrollY;r.f=1;st.d[q.key]=r;save();drawD(c,q,el,d);fx(el);after(c,el,d,y);};
     const ed=document.createElement("button");ed.type="button";ed.className="tbtn";ed.textContent="Volver a editar";
     ed.onclick=()=>{const y=window.scrollY;st.d[q.key]={t:r.t};save();drawD(c,q,el,d);if(Math.abs(window.scrollY-y)>2)window.scrollTo(0,y);};
     row.append(ok,ed);opts.appendChild(row);exp.hidden=true;exp.className="exp";return;}
   const k=chk.size,n=items.length;exp.hidden=false;exp.className="exp "+(k===n?"ok":"bad");
   exp.innerHTML=`<b>${k===n?(one?"Incluiste la respuesta esperada.":`Completo: ${n} de ${n} ítems.`):(one?"No incluiste la respuesta esperada.":`${k} de ${n} ítems.`)}</b>${esc(q.exp)}`;
 }
-function steps(c,b){const qs=QS(c);let open=true,lockAt=-1;qs.forEach((q,i)=>{const el=b.querySelector(`.step[data-s="${i}"]`);el.hidden=!open;if(open&&!done(q)){open=false;lockAt=i;}});
+function fx(el){el.classList.remove("fx");void el.offsetWidth;el.classList.add("fx");}
+function steps(c,b){const qs=QS(c);let open=true,lockAt=-1;qs.forEach((q,i)=>{const el=b.querySelector(`.step[data-s="${i}"]`);const was=el.hidden;el.hidden=!open;if(was&&!el.hidden){el.classList.remove("reveal");void el.offsetWidth;el.classList.add("reveal");}if(open&&!done(q)){open=false;lockAt=i;}});
   const lk=b.querySelector(".lock");const rem=qs.length-1-lockAt;
   if(lockAt>=0&&rem>0){lk.hidden=false;lk.textContent=`Respondé la pregunta ${lockAt+1} para ver cómo sigue el caso (${rem} pregunta${rem>1?"s":""} más).`;}else lk.hidden=true;}
 function updFoot(c,b,d){const x=caseStat(c);b.querySelector(".score").textContent=x.ans<x.n?`${x.ans} de ${x.n} respondidas`:(DEV(st)?`Resultado: ${x.it} de ${x.itn} ítems de la lista`:`Resultado: ${x.ok} de ${x.n} correctas`);d.querySelector(".pill-slot").innerHTML=pillFor(x);}
@@ -3262,6 +3301,7 @@ $("#thm").onclick=()=>{st.theme=st.theme==="dark"?"light":"dark";save();applyThe
 applyTheme();
 function show(v,opt){opt=opt||{};VIEW=v;document.body.dataset.v=v;
   $("#vhome").hidden=v!=="home";$("#vsecs").hidden=v!=="secs";$("#vcases").hidden=v!=="cases";$("#vupd").hidden=v!=="upd";
+  {const ve=$({home:"#vhome",secs:"#vsecs",cases:"#vcases",upd:"#vupd"}[v]);if(ve&&!opt.keepScroll){ve.classList.remove("venter");void ve.offsetWidth;ve.classList.add("venter");}}
   if(v!=="cases")setAccent(null);
   if(v==="home")renderHome();else if(v==="upd")renderUpd();else if(v==="secs"){renderMeter();renderSecs();}else{renderMeter();renderCrumbs();renderIdx();if(!opt.keep)renderSection(opt.open);}
   updRepG();
