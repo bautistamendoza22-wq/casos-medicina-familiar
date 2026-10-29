@@ -139,7 +139,10 @@ figcaption{font-size:.8rem;color:var(--muted);margin-top:6px}
 .gcases button{border:1px solid var(--line);background:var(--soft);border-radius:999px;padding:3px 10px;font-size:.8rem;cursor:pointer;color:var(--fg)}
 .gcases button:hover{border-color:var(--accent)}
 .updlink{margin-top:18px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:.9rem;color:var(--muted)}
-#acctWrap{display:inline-flex;align-items:center;gap:6px}
+#acctWrap{display:inline-flex;align-items:center;gap:6px;position:relative}
+#acctWrap .sst{position:absolute;top:100%;right:0;margin-top:3px;font-size:.7rem;pointer-events:none;transition:opacity .3s}
+#acctWrap .sst:empty{opacity:0}
+#acctWrap .acct{min-width:8em;justify-content:center}
 #acctWrap:empty{display:none}
 .acct{border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:8px;padding:6px 10px;cursor:pointer;font-size:.85rem;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
 .acct:hover{border-color:var(--accent)}
@@ -3798,9 +3801,9 @@ const SYNC_OK=!!FB_CONFIG&&(/github\.io$|^localhost$|^127\.0\.0\.1$/.test(locati
 let fb=null,fbUser=null,db=null,syncT=null,sstate="";
 function loadScript(src){return new Promise((res,rej)=>{const s=document.createElement("script");s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s);});}
 function renderAcct(){const w=$("#acctWrap");if(!w)return;if(!SYNC_OK){w.innerHTML="";return;}
-  if(!fbUser){w.innerHTML=sstate==="load"?`<span class="sst">Conectando…</span>`:`<button type="button" class="acct" id="login">Iniciar sesión</button>`;const b=$("#login");if(b)b.onclick=login;return;}
+  if(!fbUser){w.innerHTML=`<button type="button" class="acct" id="login"${sstate==="load"?" disabled":""}>Iniciar sesión</button>`+(sstate==="load"?`<span class="sst">Conectando…</span>`:"");const b=$("#login");if(b)b.onclick=login;return;}
   const nm=(fbUser.displayName||fbUser.email||"?").trim();const st2={ok:"☁ Guardado",pending:"Guardando…",sync:"Sincronizando…",error:"⚠ Sin sincronizar"}[sstate]||"☁";
-  w.innerHTML=`<span class="sst${sstate==="error"?" err":""}">${st2}</span><button type="button" class="acct" id="acctB" title="${esc(fbUser.email||"")}"><span class="av">${esc(nm[0].toUpperCase())}</span>Salir</button>`;
+  w.innerHTML=`<button type="button" class="acct" id="acctB" title="${esc(fbUser.email||"")}"><span class="av">${esc(nm[0].toUpperCase())}</span>Salir</button><span class="sst${sstate==="error"?" err":""}">${st2}</span>`;
   $("#acctB").onclick=logout;}
 async function initSync(){if(!SYNC_OK)return;sstate="load";renderAcct();
   try{if(window.__fbStub){fb=window.__fbStub;}else{const B="https://cdn.jsdelivr.net/npm/firebase@10.14.1/";await loadScript(B+"firebase-app-compat.js");await loadScript(B+"firebase-auth-compat.js");await loadScript(B+"firebase-firestore-compat.js");fb=window.firebase;fb.initializeApp(FB_CONFIG);}
