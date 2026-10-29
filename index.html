@@ -2,9 +2,9 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Casos clínicos interactivos para practicar el examen de Medicina Familiar, basados en el cuadernillo 2026.">
-<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,"Segoe UI",sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+</head>
+<body>
 <title>Casos de Medicina Familiar</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -88,8 +88,6 @@ main{min-width:0}
 .dmodal th{font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
 .dmodal td.n{font-family:var(--f-mono);white-space:nowrap}
 .dmodal small{color:var(--muted);font-size:.8rem}
-</head>
-<body>
 
 .cases{display:flex;flex-direction:column;gap:12px}
 section.fam{margin:0 0 16px}
@@ -312,6 +310,37 @@ body[data-v="cases"] .brand h1{color:var(--accent)}
 .top-in{max-width:980px}
 .brand{flex:1 1 520px}
 @media (max-width:600px){.top-in{gap:8px}.tbtn,.thm,.acct{padding:7px 11px;font-size:.82rem}.meter{width:100%;justify-content:space-between}.meter .bar{flex:1}}
+
+/* ---- Actualizaciones por tema ---- */
+.ugrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr));gap:10px}
+.ucard{display:grid;grid-template-columns:12px minmax(0,1fr) auto;gap:4px 10px;align-items:start;text-align:left;border:1px solid var(--line);border-left:4px solid var(--c);background:var(--card);border-radius:12px;padding:12px 14px;cursor:pointer;font:inherit;color:var(--fg);transition:background-color .29s,border-color .29s,transform .19s,box-shadow .32s;animation:inUp .64s cubic-bezier(.2,.8,.3,1) both}
+.ucard:hover{border-color:var(--c);transform:translateY(-2px);box-shadow:0 6px 18px rgb(0 0 0 / .07);background:color-mix(in oklab,var(--c) 6%,var(--card))}
+.ucard:active{transform:scale(.98)}
+.ucard .dot{margin-top:6px}
+.ucard .ut{display:flex;flex-direction:column;gap:5px;min-width:0}
+.ucard .ut b{font-family:var(--f-display);font-weight:400;font-size:1.12rem;line-height:1.2;color:color-mix(in oklab,var(--c) 70%,var(--fg))}
+.ucard .usrc{align-self:flex-start;font-size:.78rem;font-weight:600;padding:2px 8px;border-radius:99px;background:color-mix(in oklab,var(--c) 14%,var(--card));color:color-mix(in oklab,var(--c) 75%,var(--fg))}
+.ucard .usec{font-family:var(--f-mono);font-size:.72rem;color:var(--muted)}
+.ucard .ugo{color:var(--c);font-weight:600;margin-top:2px;transition:transform .2s}
+.ucard:hover .ugo{transform:translateX(3px)}
+:root[data-theme="dark"] .ucard .ut b,:root[data-theme="dark"] .ucard .usrc{color:color-mix(in oklab,var(--c) 45%,var(--fg))}
+:root[data-theme="dark"] .ucard .usrc{background:color-mix(in oklab,var(--c) 24%,var(--card))}
+:root[data-theme="dark"] .ucard .ugo{color:color-mix(in oklab,var(--c) 50%,var(--fg))}
+.ugrid>.ucard:nth-child(2){animation-delay:.04s}.ugrid>.ucard:nth-child(3){animation-delay:.08s}.ugrid>.ucard:nth-child(4){animation-delay:.12s}.ugrid>.ucard:nth-child(5){animation-delay:.16s}.ugrid>.ucard:nth-child(n+6){animation-delay:.2s}
+.dmodal .dbox.ubox{border-top:5px solid var(--c);max-width:820px}
+.ubox #dmt{color:color-mix(in oklab,var(--c) 70%,var(--fg))}
+:root[data-theme="dark"] .ubox #dmt,:root[data-theme="dark"] .ubox h4{color:color-mix(in oklab,var(--c) 45%,var(--fg))}
+.ubox #dmt small{display:block;font-family:var(--f-sans);font-size:.85rem;color:var(--muted);margin-top:4px}
+.ubox h4{margin:14px 0 4px;font-size:.98rem;font-weight:600;color:color-mix(in oklab,var(--c) 70%,var(--fg))}
+.ubox #dbody>h4:first-child{margin-top:0}
+.ubox ul{margin:4px 0 6px;padding-left:20px}
+.ubox li{margin:4px 0;line-height:1.45}
+.ubox .unote{margin:4px 0 6px;font-size:.88rem;color:var(--muted);background:var(--soft);border-radius:8px;padding:8px 10px}
+.ubox table{min-width:520px;margin:4px 0 6px}
+.ubox table.t2{min-width:0}
+.ubox th{background:color-mix(in oklab,var(--c) 8%,transparent)}
+.ubox .gcases{margin-top:4px}
+@media (max-width:600px){.dmodal{padding:8px}.dmodal .dbox{padding:14px}}
 </style>
 <div id="bgfx" aria-hidden="true"><i class="b1"></i><i class="b2"></i><i class="b3"></i><i class="b4"></i></div>
 
@@ -3626,13 +3655,87 @@ const GUIDES=[
  {re:/OMS 2024/,name:"Puntos de corte de anemia OMS 2024",src:"Arch Argent Pediatr 2026;124(1)",items:["Entre 6 y 24 meses, anemia con Hb < 10,5 g/dl (antes < 11)."]},
 ];
 function updOf(q){const s=q.text+" "+q.exp+" "+(q.opts||[]).join(" ");const g=GUIDES.find(g=>g.re.test(s));return g?g.name:"";}
+// ---- Actualizaciones por tema: botón con el color de la sección + panel con la información
+// Bloques: {h:"subtítulo", li:[...]} lista · {h, t:[[encabezados],[fila],...]} tabla · {n:"nota"}
+const UPDT=[
+ {s:1,name:"Trastornos hipertensivos del embarazo",src:"Consenso FASGO de THE 2025",re:/Consenso FASGO/,b:[
+  {h:"Definiciones",li:["**HTA en el embarazo:** PAS ≥ 140 y/o PAD ≥ 90 mmHg en al menos 2 tomas en el mismo brazo, con 15 min de intervalo. **HTA grave:** ≥ 160 y/o ≥ 110.","**Preeclampsia:** HTA de novo después de las 20 semanas con proteinuria **o** daño renal, hepático, neurológico, hematológico o disfunción uteroplacentaria. La proteinuria ya no es obligatoria.","Se abandonan «leve» y «severa»: ahora es **con o sin signos de severidad**. La cantidad de proteinuria y el ácido úrico no deciden la interrupción."]},
+  {h:"Estudios ante TA ≥ 140/90",li:["Hemograma con plaquetas, glucemia, urea, creatinina, ácido úrico, hepatograma y proteinuria (≥ 0,3 g/24 h o proteína/creatinina ≥ 30 mg/mmol).","Cociente sFlt-1/PlGF (si está disponible) para confirmar o descartar preeclampsia antes de las 37 semanas. Evaluación fetal y ECG."]},
+  {h:"Antihipertensivos",t:[["Fármaco","Dosis"],["Labetalol","100-400 mg por toma, c/12 h como mínimo (máx. 1200 mg/día)"],["Nifedipina LP","30-60 mg c/12-24 h (máx. 120 mg/día)"],["Alfametildopa","250-500 mg c/6-12 h (máx. 2500 mg/día)"],["Amlodipina","5-10 mg/día"]]},
+  {li:["Empezar con monoterapia. Suspender IECA, ARA II, espironolactona y atenolol.","Con TA ≥ 160/110: antihipertensivo de acción rápida (labetalol IV, hidralazina IV o nifedipina oral)."]},
+  {h:"Preeclampsia con signos de severidad",li:["**Sulfato de magnesio** 4 g IV de ataque + 1 g/h por 24 h (profilaxis de eclampsia; no es antihipertensivo). Control clínico, no de magnesemia de rutina.","Con compromiso endotelial materno severo: finalizar la gestación, sea cual sea la edad gestacional.","Sin signos de severidad: finalizar a las 37 semanas."]},
+  {h:"Prevención",t:[["","Cuadernillo","FASGO 2025"],["Tamizaje","Factores de riesgo","Combinado a las 11-13,6 semanas"],["Aspirina","75-100 mg/día desde las 8-16 semanas","150 mg a la noche, de las 12 a las 36 semanas"]]},
+  {li:["Posparto: reclasificar a las 12 semanas con MAPA y seguir el riesgo cardiovascular."]}]},
+ {s:3,name:"Asma",src:"GINA 2026",re:/GINA 2026/,b:[
+  {h:"Principios",li:["**Todo paciente con asma recibe un tratamiento con ICS** desde el diagnóstico. Nunca SABA solo.","Rescate preferido: **ICS-formoterol a demanda (AIR)**. Alternativa: ICS-SABA, o SABA + ICS.","SABA ≥ 3 envases/año ↑ exacerbaciones graves; ≥ 12/año ↑ mortalidad.","No recomendados: salbutamol o teofilina orales, fenoterol, SABA regular.","Antes de subir de paso: revisar adherencia, técnica inhalatoria, factores de riesgo y comorbilidades.","Bajar de paso tras 2-3 meses controlado: ↓ ICS 25-50 %. No suspender el ICS en ≥ 12 años.","Control 1-3 meses después de iniciar, luego c/3-12 meses; tras una exacerbación, dentro de 1 semana."]},
+  {h:"Adultos y adolescentes (≥ 12 años)",t:[["Paso","Track 1 (preferido)","Track 2 (alternativo)"],["1","ICS-formoterol a demanda (AIR)","ICS-SABA a demanda (o ICS cada vez que usa SABA)"],["2","ICS-formoterol a demanda (AIR)","ICS a dosis baja diario"],["3","MART a dosis baja","ICS-LABA a dosis baja"],["4","MART a dosis media","ICS-LABA a dosis media"],["5","+ LAMA; derivar (fenotipo, biológicos)","+ LAMA; derivar"]]},
+  {li:["MART con budesonida-formoterol 160/4,5: pasos 1-2, 1 inhalación a demanda; paso 3, 1 inh c/12 h + rescate; paso 4, 2 inh c/12 h + rescate. Consultar si necesita > 12 inh/día."]},
+  {h:"Niños de 6 a 11 años",t:[["Paso","Preferido"],["1","ICS-formoterol o ICS + SABA a demanda"],["2","ICS a dosis baja diario"],["3","ICS a dosis media, ICS-LABA a dosis baja o MART a dosis baja"],["4","ICS-LABA a dosis media o MART; considerar especialista"],["5","Derivar (LAMA, biológicos)"]]},
+  {li:["MART con budesonida-formoterol 80/4,5: paso 3, 1 inh/día; paso 4, 1 inh c/12 h; + rescate. Consultar si > 8 inh/día.","Dosis baja de ICS: budesonida 200-400 µg/día en adultos y 100-200 µg/día en niños; fluticasona propionato 100-250 y 50-100 µg/día.","≤ 5 años: sin cambios respecto del cuadernillo."]},
+  {h:"Exacerbación en el centro de salud",li:["**Leve:** salbutamol 4 puff con aerocámara (o budesonida-formoterol 160/4,5, 2 puff); repetir 1 vez a los 30-60 min.","**Moderada** (habla en frases, FR ≤ 30, SatO2 ≥ 92 %, PEF 50-70 %): salbutamol 4-6 puff c/20-30 min hasta 3 veces + ipratropio 4 puff + corticoide oral.","**Grave** (SatO2 < 92 %, FR > 30, PEF < 50 %, no habla; tórax silente o somnolencia = riesgo vital): traslado e iniciar ya salbutamol 6-10 puff + ipratropio, O2 para SatO2 92-95 % y corticoide.","No Rx, gases ni antibióticos de rutina.","Alta: SatO2 ≥ 92 % y PEF > 70 % 1-2 h después de la última dosis. Dejar MART del paso 4 (o ICS-LABA a dosis media) y control en 2-7 días.","Corticoide oral: adultos prednisolona 40-50 mg/día por 5-7 días; niños 1-2 mg/kg/día (máx. 40 mg) por 3-5 días. Sin descenso."]},
+  {h:"Situaciones especiales",li:["**Embarazo:** todas con ICS (↓ parto pretérmino y bajo peso); no suspender; control c/4-6 semanas; tratar las crisis igual.","**Vacunas:** neumococo, tos convulsa, COVID-19, influenza y VSR."]}]},
+ {s:3,name:"Tuberculosis",src:"Pautas técnicas de TB 2026",re:/Pautas técnicas de TB 2026/,b:[
+  {h:"Qué cambia",t:[["","Cuadernillo","Pautas 2026"],["Esquema","2HRZE/4HR «salvo domingos»","2HRZE/4HR **diario** (60 + 120 tomas)"],["Toma","≥ 2 h después de comer","En ayunas o lejos de las comidas; 1 h antes de antiácidos"],["Supervisión","TDO a todos","TDO si hay riesgo de abandono; «tratamiento acompañado» si hay buena adherencia"],["Contactos < 5 años","Isoniacida 6 meses","TPT sin importar la PPD, de preferencia **3HR**"],["Diagnóstico","Baciloscopia y cultivo","+ prueba molecular rápida (**Xpert MTB/RIF**)"],["Control","—","Baciloscopia al final del 2° mes; 4° y 6° sólo si sigue expectorando"]]},
+  {h:"Comprimidos según peso",t:[["Peso","Cuádruple HRZE (75/150/400/275) — 2 meses","Doble HR (150/300) — 4 meses"],["30-34 kg","2","1"],["35-39 kg","2,5","1,5"],["40-54 kg","3","1,5"],["≥ 55 kg","4","2"]]},
+  {h:"Contactos y seguimiento",li:["TPT: < 5 años siempre (descartada TB activa); 5-19 años según la PPD; adultos según riesgo. 3HR = H 10 + R 10 mg/kg/día; alternativas 6H o 4R. Piridoxina con H.","Laboratorio inicial: VIH, hepatitis B, Chagas, VDRL y test de embarazo.","Baciloscopia positiva al 2° mes: pedir Xpert, cultivo y sensibilidad. Positiva al final del 4° mes = fracaso.","Notificar todos los casos (SNVS 2.0)."]}]},
+ {s:4,name:"Infecciones de piel y partes blandas",src:"Guía SADI de IPPB 2025",re:/Guía SADI de IPPB 2025/,b:[
+  {h:"Qué cambia",t:[["Cuadro","Cuadernillo","SADI 2025"],["Erisipela / celulitis leve","Penicilina V 1.000.000 UI c/6 h por 10 días","**Cefalexina o cefadroxilo 5-7 días**; marcar el borde y reevaluar a las 48-72 h. No penicilina benzatínica ni quinolonas"],["Alergia a betalactámicos","Azitromicina o claritromicina","**Clindamicina** 300 mg c/6-8 h"],["Impétigo localizado","Mupirocina","**Ácido fusídico 2 %** 3 veces/día por 5 días (mupirocina como alternativa)"],["Impétigo extenso","Cefalexina 50-100 mg/kg/día 7-10 días","Cefalexina **25-50 mg/kg/día** c/6 h por 5-7 días; reevaluar a las 72 h"],["Forúnculo","Drenaje","ATB sólo con celulitis, lesiones múltiples, cara, inmunodeficiencia o compromiso sistémico: **TMS 5-7 días** (SAMR de la comunidad)"],["Celulitis moderada","Cefazolina EV","Cefazolina; **ceftriaxona** si la herida estuvo en contacto con agua (Aeromonas)"]]},
+  {li:["Sin respuesta o con riesgo de SAMR: agregar TMS o doxiciclina/minociclina.","Recurrencias (≥ 2 en 6 meses): tratar la puerta de entrada, compresión elástica fuera del episodio agudo y bajar de peso.","Mordeduras: amoxicilina-clavulánico de elección; 5-7 días si hay infección."]}]},
+ {s:5,name:"Hipertensión arterial",src:"GPC Nacional de HTA 2026",re:/GPC Nacional de HTA 2026/,b:[
+  {h:"Qué cambia",t:[["Punto","Cuadernillo","GPC 2026"],["Diagnóstico","—","≥ 140/90 confirmada en 2 consultas en días distintos, con 2 tomas promediadas en cada una"],["Inicio del tratamiento","Estadio 1 sin DOB: 3-6 meses de cambios de hábitos","**Sin demora: dos fármacos a dosis bajas** + cambios de hábitos"],["Elección","≥ 55 años: tiazida o BC en monoterapia","IECA o ARA II + amlodipina o tiazida"],["Combinaciones","—","Nunca IECA + ARA II"],["Edema por amlodipina","Asociar IECA","Bajar la amlodipina o cambiarla por tiazida"],["Sal","< 2 g de sodio ≈ 6 g de sal","**5 g de sal** = 2000 mg de sodio"],["Alcohol","< 3 UBE en hombres","Lo menor posible; nunca > 2 UBE/día (hombres) ni > 1 (mujeres)"],["Daño de órgano blanco","Incluía fondo de ojo, ecodoppler de cuello y ergometría","ECG, creatinina con FGe y **RACo**; sin fondo de ojo de rutina"],["Meta","—","< 140/90; ≈ 130/80 en alto riesgo; < 150/90 en ≥ 80 años"],["Aspirina","Framingham > 20 %","Sólo con ECV establecida"]]},
+  {h:"Vía clínica (una toma diaria, control mensual)",t:[["Paso","Esquema"],["1","Losartán 25 + amlodipina 2,5"],["2","Losartán 50 + amlodipina 5"],["3","Losartán 100 + amlodipina 10"],["4","+ hidroclorotiazida 25"]]},
+  {li:["Antes de intensificar: adherencia y efectos adversos. Derivar si no llega a la meta con 3 fármacos a dosis altas.","Toma correcta: 5 min sentado, brazo apoyado a la altura del corazón, manguito que cubra el 80-100 % del brazo, ≥ 2 tomas promediadas, ambos brazos la 1ª vez.","HTA + DBT: IECA o ARA II + amlodipina o tiazida, más estatina de moderada intensidad."]}]},
+ {s:5,name:"Diabetes tipo 2: tratamiento",src:"Guía SAD de DM2 2025",re:/SAD de DM2 2025|guía SAD\b/i,b:[
+  {n:"Diagnóstico, rastreo y seguimiento de complicaciones: sin cambios respecto del cuadernillo."},
+  {h:"Metformina",li:["1ª línea, junto con el abordaje integral (alimentación, actividad física, sueño, tabaco, alcohol, salud mental).","500-850 mg 1-2 veces/día con las comidas → a los 5-7 días 850-1000 mg c/12 h (máx. 2000 mg/día). Si no se tolera, liberación prolongada. Controlar B12.","Según FGe: > 60 dosis plena; 45-59 no iniciar con > 1000 mg/día; 30-44 no iniciar (si ya la toma, ≤ 1000 mg/día); < 30 contraindicada."]},
+  {h:"Intensidad inicial según HbA1c",t:[["HbA1c","Conducta"],["< 7,5 %","Monoterapia"],["7,5 a < 10 %","Terapia dual"],["≥ 10 % sin síntomas","Inyectable (arGLP-1 ± insulina)"],["Síntomas catabólicos o glucemia > 300","Insulina"]]},
+  {h:"2° fármaco según comorbilidad (independiente de la HbA1c)",t:[["Situación","Elección"],["ECV aterosclerótica o alto riesgo","arGLP-1 o iSGLT-2"],["Insuficiencia cardíaca","iSGLT-2"],["ERC (FGe > 20)","iSGLT-2 (arGLP-1 si no se tolera)"],["Obesidad","arGLP-1 (semaglutida)"]]},
+  {li:["El cuadernillo los reservaba para falta de control con metformina y ECV, muy alto RCV o ERC ≥ 3, y usaba sulfonilurea como 2° fármaco.","Sulfonilureas: no glibenclamida ni clorpropamida; gliclazida es la de menor riesgo de hipoglucemia."]},
+  {h:"Insulina basal",t:[["","Cuadernillo","SAD 2025"],["Inicio","0,2 UI/kg o 10-12 UI","0,1-0,2 UI/kg o 10 UI"],["Ajuste","+2-4 UI c/3 días","c/3-5 días: +2 UI (+4 si > 180); −4 UI si < 70"],["Meta en ayunas","80-130 mg/dl","80-130 mg/dl"]]},
+  {li:["Terapia inyectable: arGLP-1 como 1ª opción para la mayoría; insulina de entrada con síntomas catabólicos.","Actividad física 150-300 min/semana + fuerza 2-3 días; sodio < 2300 mg/día. Reevaluar el tratamiento c/3-6 meses."]}]},
+ {s:6,name:"Insuficiencia cardíaca y rehabilitación cardíaca",src:"Guías ESC 2026",re:/ESC 2026/,secs:[6],b:[
+  {h:"Insuficiencia cardíaca",li:["Diagnóstico con péptidos natriuréticos y ecocardiograma.","Fenotipos: **FE reducida** (FEVI < 50 % + síntomas o signos) y **FE preservada** (FEVI ≥ 50 % + síntomas o signos + alteración estructural o funcional).","FE reducida: tratamiento de base con **ARNI o IECA** (ARA II si no tolera), **betabloqueante, ARM (espironolactona) e iSGLT2**. El cuadernillo reservaba la espironolactona para CF III-IV y no incluía iSGLT2 ni ARNI.","FE preservada: ARM e iSGLT2.","FEVI ≤ 35 % de causa isquémica: evaluar cardiodesfibrilador implantable."]},
+  {h:"Rehabilitación cardíaca",li:["Derivar a un programa tras SCA e IC: ejercicio, cesación tabáquica, nutrición, abordaje psicosocial y optimización de fármacos."]},
+  {n:"⚠ Las guías incluyen la 5ª definición universal de IAM; el detalle de esos cambios no está en este resumen."}]},
+ {s:7,name:"Trastornos digestivos funcionales",src:"Criterios Roma V 2026",re:/Roma V/,b:[
+  {n:"El cuadernillo usa Roma IV. Salvo indicación, criterios cumplidos en los últimos 3 meses con inicio ≥ 6 meses antes (adultos) o ≥ 2 meses antes (pediatría)."},
+  {h:"Adultos",t:[["Cuadro","Roma V"],["SII","**Dolor o malestar** recurrente **no continuo**, **≥ 3 días/mes** (antes ≥ 1 día/semana), con ≥ 2 de: relación con la defecación, cambio de frecuencia, cambio de forma. Subtipos por Bristol (> 25 %), contando sólo días con deposición anormal"],["Dispepsia funcional","Síntomas molestos; distrés posprandial ≥ 2 días/semana, dolor epigástrico ≥ 1 día/semana. Náuseas predominantes o vómitos persistentes la excluyen"],["Constipación","Pasa a **constipación crónica**: ≥ 2 de 6 (pujo, heces duras, evacuación incompleta, obstrucción, maniobras manuales en > 25 %, < 3 deposiciones/semana); no cumple SII"],["Diarrea funcional","Heces blandas en > 25 %, heces duras raras sin medicación"],["Dolor biliar","≥ 20 min hasta horas, episódico, intenso; se retiran centellografía y manometría"]]},
+  {h:"Pediatría: dolor abdominal",t:[["Cuadro","Roma V"],["SII","Desde los 6 años; dolor ≥ 4 días/mes con ≥ 1 de: relación con la defecación, cambio de frecuencia o de forma. El dolor es predominante (ya no se trata primero la constipación)"],["Migraña abdominal","Criterios ≥ 6 meses; ≥ 2 episodios separados ≥ 1 semana; paroxística, ≥ 1 h, periumbilical, incapacitante, + ≥ 2 de anorexia, náuseas, vómitos, cefalea, fotofobia, palidez"],["Dispepsia funcional","Distrés posprandial ≥ 3 días/semana o dolor epigástrico ≥ 1 día/semana"],["Dolor abdominal no especificado","Dolor intermitente ≥ 4 días/mes que no cumple los otros criterios (antes DAF-NEOM)"],["Dolor biliar (nuevo)","Hipocondrio derecho, ≥ 30 min, ≥ 4 días/mes, sin litiasis"],["Dolor de mediación central (nuevo)","Continuo y limita la vida diaria"]]},
+  {h:"Pediatría: otros",li:["**Constipación funcional:** ≥ 2 de 6 en el último mes (≤ 2 defecaciones/semana, incontinencia ≥ 1/semana, retención, heces duras o dolorosas, masa fecal, heces de gran diámetro). El dolor no es criterio.","**Cólico del lactante → síndrome de distrés del lactante:** inicio < 5 meses, llanto o irritabilidad recurrente y prolongado sin causa, que los cuidadores no pueden prevenir ni resolver. La «regla de los 3» queda sólo para investigación.","**Diarrea funcional:** ≥ 4 deposiciones/día en < 4 años o > 2/día en ≥ 4 años, indoloras, con ≥ 25 % de heces no formadas."]}]},
+ {s:8,name:"ITU complicada y pielonefritis",src:"IDSA 2025",re:/IDSA 2025/,b:[
+  {n:"Cistitis, ITU recurrente, medidas generales y ITU en niños: sin cambios respecto del cuadernillo."},
+  {h:"Clasificación",li:["**No complicada:** limitada a la vejiga, sin fiebre ni signos sistémicos.","**Complicada:** más allá de la vejiga; incluye la pielonefritis."]},
+  {h:"Elección empírica en 4 pasos",li:["1. **Gravedad:** con o sin sepsis (qSOFA o SIRS; disfunción orgánica).","2. **Riesgo de resistencia:** evitar el ATB al que fue resistente un urocultivo previo; evitar quinolonas si las recibió en los últimos 12 meses.","3. **Paciente:** alergias, contraindicaciones e interacciones.","4. **Antibiograma local** (en sepsis)."]},
+  {t:[["Situación","Empírico","Evitar al inicio"],["Con sepsis","Cefalosporina de 3ª/4ª, carbapenem, pip-tazo o fluoroquinolona","ATB nuevos y aminoglucósidos"],["Sin sepsis","Cefalosporina de 3ª/4ª, pip-tazo o fluoroquinolona","Carbapenems, ATB nuevos y aminoglucósidos"]]},
+  {li:["Nitrofurantoína y fosfomicina oral no sirven en la ITU complicada.","Siempre urocultivo antes del ATB y pasar a tratamiento dirigido apenas esté.","Pasar de IV a VO si mejora, tolera y hay opción oral efectiva (también con bacteriemia)."]},
+  {h:"Duración (pielonefritis ambulatoria)",t:[["Fármaco","Cuadernillo","IDSA 2025"],["Ciprofloxacina 500 mg c/12 h","7 días","**5-7 días**"],["Cefixima 400 mg","10 días","**7 días**"],["TMS 160/800 mg c/12 h","14 días","**7 días**"]]},
+  {li:["Con bacteriemia: 7 días (antes 14). Hombre con sospecha de prostatitis: 10-14 días.","Individualizar: sonda permanente, inmunocompromiso, ERC grave, absceso, obstrucción, anomalías estructurales, procedimiento urológico reciente."]}]},
+ {s:8,name:"Enfermedad renal crónica",src:"Guía ESC 2026 de ECV y ERC",re:/ESC 2026/,secs:[8],b:[
+  {h:"Tratamiento",li:["Para la mayoría: **IECA o ARA II + iSGLT2** (se puede iniciar con FGe ≥ 20).","**Estatina** independientemente del colesterol (si no está en diálisis).","DBT2 con albuminuria: agregar **finerenona o semaglutida**.","Controlar potasio y FGe 1-4 semanas después de iniciar IECA o ARA II; una caída del FGe < 30 % es esperable y no obliga a suspender."]},
+  {h:"Estadificación y derivación",li:["FGe y cociente albúmina/creatinina en orina, al menos 1 vez por año en DBT, ERC y ECV.","En G3-G5, estimar el riesgo de diálisis con la ecuación KFRE para derivar a tiempo."]}]},
+ {s:9,name:"Anemia en lactantes",src:"Puntos de corte OMS 2024",re:/OMS 2024/,b:[
+  {h:"6 a 24 meses",t:[["","OMS 2011 (cuadernillo)","OMS 2024"],["Anemia","Hb < 11 g/dl","Hb **< 10,5 g/dl**"],["Leve","10-10,9","9,5-10,4"],["Moderada","7-9,9","7-9,4"],["Grave","< 7","< 7"]]},
+  {n:"Fuente: Arch Argent Pediatr 2026;124(1). El tratamiento con hierro no cambia."}]}
+];
+function fmtU(s){return esc(s).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>");}
+function updCases(u){return CASES.filter(c=>(!u.secs||u.secs.includes(c.s))&&c.q.some(q=>u.re.test(q.text+" "+q.exp+" "+(q.opts||[]).join(" "))));}
+function updBody(u){
+  let h=u.b.map(x=>(x.h?`<h4>${esc(x.h)}</h4>`:"")+(x.n?`<p class="unote">${fmtU(x.n)}</p>`:"")+(x.li?`<ul>${x.li.map(i=>`<li>${fmtU(i)}</li>`).join("")}</ul>`:"")+(x.t?`<div class="tw"><table${x.t[0].length<3?' class="t2"':""}><thead><tr>${x.t[0].map(c=>`<th>${fmtU(c)}</th>`).join("")}</tr></thead><tbody>${x.t.slice(1).map(r=>`<tr>${r.map((c,i)=>i?`<td>${fmtU(c)}</td>`:`<td><b>${fmtU(c)}</b></td>`).join("")}</tr>`).join("")}</tbody></table></div>`:"")).join("");
+  const cs=updCases(u);
+  if(cs.length)h+=`<h4>Casos con preguntas actualizadas (${cs.length})</h4><div class="gcases">${cs.map(c=>`<button type="button" data-c="${c.id}">${esc(c.t)} · ${esc(SHORT[c.s])}</button>`).join("")}</div>`;
+  return h;}
+let UPDLAST=null;
+function openUpd(i){const u=UPDT[i];const m=$("#dmodal");const box=m.querySelector(".dbox");
+  box.classList.add("ubox");box.style.setProperty("--c",SECTIONS[u.s][1]);
+  $("#dmt").innerHTML=`${esc(u.name)}<small>${esc(u.src)} · ${esc(SECTIONS[u.s][0])}</small>`;
+  $("#dbody").innerHTML=updBody(u);box.scrollTop=0;
+  $("#dbody").querySelectorAll(".gcases button").forEach(b=>b.onclick=()=>{closeDoses();openCase(+b.dataset.c);});
+  UPDLAST=i;m.hidden=false;document.body.style.overflow="hidden";$("#dclose").focus();}
 function renderUpd(){
   const box=$("#upd");
-  box.innerHTML=`<div class="crumbs"><button type="button" class="back" id="bkU">← Volver</button></div><div class="vhead"><h2>Actualizaciones de guías</h2><p>El contenido base es el cuadernillo de Medicina Familiar 2026. Cuando una guía más reciente cambia una conducta, la pregunta lleva la etiqueta <span class="tag upd">Actualizado</span> y la explicación aclara qué decía el cuadernillo y qué cambió.</p></div><div class="updlist">${GUIDES.map((g,gi)=>{
-    const cs=CASES.filter(c=>c.q.some(q=>{const s=q.text+" "+q.exp+" "+(q.opts||[]).join(" ");return g.re.test(s);}));
-    return`<div class="gcard"><h3>${esc(g.name)}</h3><div class="gmeta">${esc(g.src)}</div><ul>${g.items.map(i=>`<li>${esc(i)}</li>`).join("")}</ul><div class="gmeta">Casos con preguntas actualizadas (${cs.length}):</div><div class="gcases">${cs.map(c=>`<button type="button" data-c="${c.id}">${esc(c.t)} · ${esc(SHORT[c.s])}</button>`).join("")}</div></div>`;}).join("")}</div>`;
+  box.innerHTML=`<div class="crumbs"><button type="button" class="back" id="bkU">← Volver</button></div><div class="vhead"><h2>Actualizaciones de guías</h2><p>El contenido base es el cuadernillo de Medicina Familiar 2026. Tocá un tema para ver qué cambió y con qué guía. Las preguntas actualizadas llevan la etiqueta <span class="tag upd">Actualizado</span>.</p></div><div class="ugrid">${UPDT.map((u,i)=>`<button type="button" class="ucard" style="--c:${SECTIONS[u.s][1]}" data-u="${i}"><span class="dot"></span><span class="ut"><b>${esc(u.name)}</b><span class="usrc">${esc(u.src)}</span><span class="usec">${esc(SHORT[u.s])}</span></span><span class="ugo" aria-hidden="true">→</span></button>`).join("")}</div>`;
   $("#bkU").onclick=()=>history.length>1?history.back():show("home");
-  box.querySelectorAll(".gcases button").forEach(b=>b.onclick=()=>openCase(+b.dataset.c));}
+  box.querySelectorAll(".ucard").forEach(b=>b.onclick=()=>openUpd(+b.dataset.u));}
 const FORM="https://docs.google.com/forms/d/e/1FAIpQLSftgrD5iOICicm-e1v2x9tMEhtpjNjAxUTku2232PRPZZ2t0w/viewform?usp=pp_url&entry.1704390447=";
 function repURL(txt){return FORM+encodeURIComponent(txt);}
 function updRepG(){const a=$("#repG");if(!a)return;let s="General";
@@ -3666,8 +3769,8 @@ function setAccent(col){CURCOL=col;TPROPS.forEach(p=>RS.removeProperty(p));if(!c
     RS.setProperty("--soft",`color-mix(in oklab, ${col} 8%, #f3f1ec)`);RS.setProperty("--line",`color-mix(in oklab, ${col} 18%, #dcd8cf)`);}}
 function applyTheme(){document.documentElement.dataset.theme=st.theme==="dark"?"dark":"light";const b=$("#thm");if(b)b.textContent=st.theme==="dark"?"☀ Modo claro":"☾ Modo oscuro";setAccent(CURCOL);}
 let VIEW="home";
-function openDoses(){const m=$("#dmodal");$("#dbody").innerHTML=buildDoseRef();m.hidden=false;document.body.style.overflow="hidden";$("#dclose").focus();}
-function closeDoses(){$("#dmodal").hidden=true;document.body.style.overflow="";const ob=$("#openDose");if(ob)ob.focus();}
+function openDoses(){const m=$("#dmodal");UPDLAST=null;const bx=m.querySelector(".dbox");bx.classList.remove("ubox");bx.style.removeProperty("--c");$("#dmt").textContent="Tabla de dosis pediátricas";$("#dbody").innerHTML=buildDoseRef();m.hidden=false;document.body.style.overflow="hidden";$("#dclose").focus();}
+function closeDoses(){$("#dmodal").hidden=true;document.body.style.overflow="";const ob=UPDLAST!==null?document.querySelector(`.ucard[data-u="${UPDLAST}"]`):$("#openDose");if(ob)ob.focus();}
 $("#dclose").onclick=closeDoses;$("#dmodal").onclick=e=>{if(e.target.id==="dmodal")closeDoses();};
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#dmodal").hidden)closeDoses();});
 $("#updG").onclick=e=>{e.preventDefault();show("upd");};
@@ -3721,6 +3824,7 @@ show("home",{nopush:true});
 initSync();
 })();
 </script>
+
 
 </body>
 </html>
