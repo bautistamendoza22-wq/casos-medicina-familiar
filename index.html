@@ -6,6 +6,7 @@
 </head>
 <body>
 <title>Casos de Medicina Familiar</title>
+<script>(function(){var d=document.documentElement;d.classList.add("boot");try{var s=JSON.parse(localStorage.getItem("mf26-casos-v1")||"null");d.dataset.theme=s&&s.theme==="dark"?"dark":"light";}catch(e){d.dataset.theme="light";}setTimeout(function(){d.classList.remove("boot");},2500);})();</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -277,10 +278,10 @@ html{background:var(--bg);transition:background-color 0.48s}
 body{background:transparent;font-size:16px}
 #bgfx{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
 #bgfx i{position:absolute;display:block;border-radius:50%;will-change:transform}
-#bgfx .b1{width:110vw;height:90vh;right:-46vw;top:-36vh;background:radial-gradient(closest-side,color-mix(in oklab,var(--g1) 30%,transparent),transparent);animation:bgA 34s ease-in-out infinite alternate}
-#bgfx .b2{width:90vw;height:110vh;left:-50vw;top:5vh;background:radial-gradient(closest-side,color-mix(in oklab,var(--g2) 34%,transparent),transparent);animation:bgB 41s ease-in-out infinite alternate}
-#bgfx .b3{width:100vw;height:90vh;right:-30vw;bottom:-46vh;background:radial-gradient(closest-side,color-mix(in oklab,var(--g3) 28%,transparent),transparent);animation:bgC 37s ease-in-out infinite alternate}
-#bgfx .b4{width:70vw;height:70vh;left:-5vw;top:-40vh;background:radial-gradient(closest-side,color-mix(in oklab,var(--g4) 30%,transparent),transparent);animation:bgD 29s ease-in-out infinite alternate}
+#bgfx .b1{width:110vw;height:90vh;right:-46vw;top:-36vh;background:radial-gradient(closest-side,color-mix(in oklab,var(--g1) 30%,transparent),transparent);animation:bgA 12s ease-in-out infinite alternate}
+#bgfx .b2{width:90vw;height:110vh;left:-50vw;top:5vh;background:radial-gradient(closest-side,color-mix(in oklab,var(--g2) 34%,transparent),transparent);animation:bgB 15s ease-in-out infinite alternate}
+#bgfx .b3{width:100vw;height:90vh;right:-30vw;bottom:-46vh;background:radial-gradient(closest-side,color-mix(in oklab,var(--g3) 28%,transparent),transparent);animation:bgC 13s ease-in-out infinite alternate}
+#bgfx .b4{width:70vw;height:70vh;left:-5vw;top:-40vh;background:radial-gradient(closest-side,color-mix(in oklab,var(--g4) 30%,transparent),transparent);animation:bgD 10s ease-in-out infinite alternate}
 @keyframes bgA{0%{transform:translate(0,0) scale(1)}50%{transform:translate(-14vw,18vh) scale(1.12)}100%{transform:translate(-26vw,6vh) scale(.94)}}
 @keyframes bgB{0%{transform:translate(0,0) scale(1)}50%{transform:translate(18vw,-12vh) scale(1.08)}100%{transform:translate(8vw,20vh) scale(1.15)}}
 @keyframes bgC{0%{transform:translate(0,0) scale(1.05)}50%{transform:translate(-22vw,-14vh) scale(.92)}100%{transform:translate(-10vw,-26vh) scale(1.1)}}
@@ -311,6 +312,10 @@ body[data-v="cases"] .brand h1{color:var(--accent)}
 .brand{flex:1 1 520px}
 @media (max-width:600px){.top-in{gap:8px}.tbtn,.thm,.acct{padding:7px 11px;font-size:.82rem}.meter{width:100%;justify-content:space-between}.meter .bar{flex:1}}
 
+/* ---- Carga sin saltos: se muestra cuando ya está armada ---- */
+html.boot body>*:not(#bgfx){opacity:0}
+html:not(.boot) body>*:not(#bgfx):not(.dmodal):not(.toast){animation:pageIn .45s ease-out both}
+@keyframes pageIn{from{opacity:0}to{opacity:1}}
 /* ---- Actualizaciones por tema ---- */
 .ugrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr));gap:10px}
 .ucard{display:grid;grid-template-columns:12px minmax(0,1fr) auto;gap:4px 10px;align-items:start;text-align:left;border:1px solid var(--line);border-left:4px solid var(--c);background:var(--card);border-radius:12px;padding:12px 14px;cursor:pointer;font:inherit;color:var(--fg);transition:background-color .29s,border-color .29s,transform .19s,box-shadow .32s;animation:inUp .64s cubic-bezier(.2,.8,.3,1) both}
@@ -357,7 +362,7 @@ body[data-v="cases"] .brand h1{color:var(--accent)}
 <div class="wrap" id="vhome" hidden><div id="home"></div></div>
 <div class="wrap" id="vsecs" hidden><div id="secs"></div></div>
 <div class="wrap" id="vupd" hidden><div id="upd"></div></div>
-<div class="wrap" id="vcases">
+<div class="wrap" id="vcases" hidden>
   <nav class="idx" aria-label="Secciones"><h2>Secciones del cuadernillo</h2><ol id="idx"></ol></nav>
   <main>
     <div class="chips" id="chips" role="tablist" aria-label="Secciones"></div>
@@ -3821,6 +3826,7 @@ function syncSoon(){if(!fbUser||!db)return;st.dirty=true;saveLocal();sstate="pen
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden"&&fbUser&&st.dirty)push();});
 try{history.replaceState({v:"home",sec:st.sec,mode:st.mode},"");}catch(e){}
 show("home",{nopush:true});
+Promise.race([document.fonts?document.fonts.ready:Promise.resolve(),new Promise(r=>setTimeout(r,800))]).then(()=>requestAnimationFrame(()=>document.documentElement.classList.remove("boot")));
 initSync();
 })();
 </script>
