@@ -183,6 +183,33 @@ figcaption{font-size:.8rem;color:var(--muted);margin-top:6px}
 .dta:focus{outline:2px solid var(--accent);outline-offset:1px}
 .dans{border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--soft);white-space:pre-wrap;font-size:.93rem}
 .dans.empty{color:var(--muted);font-style:italic}
+.iarow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.iaerr{color:var(--bad);font-size:.88rem}
+.iaspin{display:inline-block;width:16px;height:16px;border:2px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:iasp .8s linear infinite;vertical-align:middle}
+@keyframes iasp{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion: reduce){.iaspin{animation-duration:2.4s}}
+.iafb{border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:8px;padding:9px 12px;background:var(--card);font-size:.92rem}
+.iafb p{margin:4px 0}.iafb ul{margin:2px 0 4px;padding-left:20px}
+.iafb .lbl,.iax .lbl{font-size:.75rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--accent)}
+.iacm{display:block;font-size:.82rem;color:var(--muted);margin-top:2px}
+.iax{margin-left:30px;max-width:78ch;display:flex;flex-direction:column;gap:8px;margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+.iax[hidden]{display:none}
+.iahint{margin:0;font-size:.88rem;color:var(--muted)}
+.iamsgs{display:flex;flex-direction:column;gap:6px}
+.iam{padding:8px 11px;border-radius:10px;font-size:.92rem;line-height:1.45;max-width:92%}
+.iam.u{align-self:flex-end;background:var(--accent-soft);border:1px solid var(--line)}
+.iam.a{align-self:flex-start;background:var(--soft);border:1px solid var(--line)}
+.iam.wait{color:var(--muted);display:flex;gap:8px;align-items:center}
+.iaq{min-height:64px}
+.iain{display:flex;flex-direction:column;gap:8px}
+.iacfg{display:flex;flex-direction:column;gap:10px;font-size:.95rem;max-width:62ch}
+.iacfg p,.iacfg ol{margin:0}.iacfg ol{padding-left:20px}
+.iacfg label{display:flex;flex-direction:column;gap:4px;font-weight:600;font-size:.88rem}
+.iacfg input,.iacfg select{font:inherit;font-weight:400;font-size:.95rem;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--fg)}
+.iamsg{min-height:1.2em;font-size:.9rem;color:var(--muted)}.iamsg.ok{color:var(--ok)}.iamsg.bad{color:var(--bad)}
+.iamut{font-size:.82rem;color:var(--muted)}
+.modes>.mcard:nth-child(3){animation-delay:0.2s}
+@media (max-width:640px){.iax{margin-left:0}}
 .clh{font-size:.82rem;font-weight:600;color:var(--muted);margin-top:4px}
 .mhint{padding-left:30px;font-size:.82rem;color:var(--muted);margin:-2px 0 2px}
 .conf{align-self:flex-start}
@@ -3484,7 +3511,7 @@ M("144-2","Visita domiciliaria con la promotora|Control puerperal y vacunas de O
 <script>
 (function(){
 const KEY="mf26-casos-v1";
-let st={a:{},d:{},mode:"mc",sec:0,pend:false};
+let st={a:{},d:{},i:{},mode:"mc",sec:0,pend:false};
 try{const s=JSON.parse(localStorage.getItem(KEY)||"null"); if(s&&typeof s==="object") st=Object.assign(st,s);}catch(e){}
 function saveLocal(){try{localStorage.setItem(KEY,JSON.stringify(st));}catch(e){}}
 function save(){saveLocal();if(typeof syncSoon==="function")syncSoon();}
@@ -3494,13 +3521,13 @@ function sanitize(){CASES.forEach(c=>c.q.forEach(q=>{const a=st.a[q.key];if(a===
 sanitize();
 function isOk(q,a){if(q.multi)return Array.isArray(a)&&a.length===q.nOk&&a.every(i=>i<q.nOk);return a===0;}
 // preguntas reescritas: se descarta la respuesta guardada para que se vuelvan a responder
-const REDO={dengue2025:["70-0","70-1"],gold2026:["23-4"],dbt2025:["35-0","35-1","35-2","106-2","176-3"],guias2026b:["24-2","24-3","24-4","24-d2","27-1","27-4","90-3","121-1","121-4"],hta2026:["32-0","32-1","32-2","32-3","32-4","32-d1","32-d2","33-0","33-1","33-2","33-3","33-4","36-1","116-4","130-3"]};
+const REDO={sca2025:["39-4"],dengue2025:["70-0","70-1"],gold2026:["23-4"],dbt2025:["35-0","35-1","35-2","106-2","176-3"],guias2026b:["24-2","24-3","24-4","24-d2","27-1","27-4","90-3","121-1","121-4"],hta2026:["32-0","32-1","32-2","32-3","32-4","32-d1","32-d2","33-0","33-1","33-2","33-3","33-4","36-1","116-4","130-3"]};
 if(!Array.isArray(st.rv))st.rv=[];
-function applyRedo(o){let ch=false;Object.keys(REDO).forEach(v=>{if(o.rv.includes(v))return;REDO[v].forEach(k=>{delete o.a[k];if(o.d)delete o.d[k];});o.rv.push(v);ch=true;});return ch;}
+function applyRedo(o){let ch=false;Object.keys(REDO).forEach(v=>{if(o.rv.includes(v))return;REDO[v].forEach(k=>{delete o.a[k];if(o.d)delete o.d[k];if(o.i)delete o.i[k];});o.rv.push(v);ch=true;});return ch;}
 if(applyRedo(st))saveLocal();
 const SEL={};
-if(!st.d||typeof st.d!=="object")st.d={};if(st.theme!=="dark")st.theme="light";if(st.mode!=="dev")st.mode="mc";
-const DEV=st=>st.mode==="dev";
+if(!st.d||typeof st.d!=="object")st.d={};if(st.theme!=="dark")st.theme="light";if(!st.i||typeof st.i!=="object")st.i={};if(st.mode!=="dev"&&st.mode!=="ia")st.mode="mc";
+const DEV=st=>st.mode==="dev"||st.mode==="ia";const IA=()=>st.mode==="ia";const SD=()=>IA()?st.i:st.d;
 // preguntas que dependen de las opciones: sólo en multiple choice
 const MCONLY=/cuál de est|\bNO\b|afirmaci|es correcta/i;
 function QS(c){if(!DEV(st))return c.q;if(c.dq)return c.dq;let carry="";const out=[];
@@ -3508,14 +3535,14 @@ function QS(c){if(!DEV(st))return c.q;if(c.dq)return c.dq;let carry="";const out
     const o=Object.assign({},q);if(carry){o.info=carry+(q.info?"\n\n"+q.info:"");carry="";}out.push(o);});
   return c.dq=out;}
 function CL(q){return q.multi?q.opts.slice(0,q.nOk):[q.opts[0]];}
-function done(q){if(DEV(st)){const r=st.d[q.key];return !!(r&&r.f);}return st.a[q.key]!==undefined;}
+function done(q){if(DEV(st)){const r=SD()[q.key];return !!(r&&r.f);}return st.a[q.key]!==undefined;}
 // orden de opciones estable por pregunta
 function rng(seed){let x=seed>>>0||1;return()=>{x^=x<<13;x^=x>>>17;x^=x<<5;return (x>>>0)/4294967296;};}
 CASES.forEach(c=>c.q.forEach((q,i)=>{const r=rng((c.id+1)*7919+(i+1)*104729);const n=q.opts.length;const ord=[...Array(n).keys()];for(let k=n-1;k>0;k--){const j=Math.floor(r()*(k+1));[ord[k],ord[j]]=[ord[j],ord[k]];}q.ord=ord;}));
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
 function caseStat(c){const qs=QS(c);let ans=0,ok=0,it=0,itn=0;
-  if(DEV(st))qs.forEach(q=>{const r=st.d[q.key];if(r&&r.f){ans++;const n=CL(q).length,k=(r.c||[]).length;it+=k;itn+=n;if(k===n)ok++;}});
+  if(DEV(st))qs.forEach(q=>{const r=SD()[q.key];if(r&&r.f){ans++;const n=CL(q).length,k=(r.c||[]).length;it+=k;itn+=n;if(k===n)ok++;}});
   else qs.forEach(q=>{const a=st.a[q.key];if(a!==undefined){ans++;if(isOk(q,a))ok++;}});
   return{ans,ok,n:qs.length,it,itn};}
 function secStat(s){let ans=0,n=0;CASES.filter(c=>c.s===s).forEach(c=>{const x=caseStat(c);n++;if(x.ans===x.n)ans++;});return{ans,n};}
@@ -3576,11 +3603,12 @@ function buildBody(c,b,d){
   b.innerHTML=h;
   qs.forEach((q,i)=>drawQ(c,q,b.querySelector(`.q[data-i="${i}"]`),d));
   steps(c,b);updFoot(c,b,d);
-  b.querySelector(".redo").onclick=()=>{qs.forEach(q=>{if(DEV(st))delete st.d[q.key];else{delete st.a[q.key];delete SEL[q.key];}});save();qs.forEach((q,i)=>drawQ(c,q,b.querySelector(`.q[data-i="${i}"]`),d));steps(c,b);updFoot(c,b,d);renderMeter();updCounts();};
+  b.querySelector(".redo").onclick=()=>{qs.forEach(q=>{if(DEV(st))delete SD()[q.key];else{delete st.a[q.key];delete SEL[q.key];}});save();qs.forEach((q,i)=>drawQ(c,q,b.querySelector(`.q[data-i="${i}"]`),d));steps(c,b);updFoot(c,b,d);renderMeter();updCounts();};
   b.querySelector(".next").onclick=()=>nextCase(c);
 }
 function after(c,el,d,y){const b=d.querySelector(".body");steps(c,b);updFoot(c,b,d);renderMeter();updCounts();if(Math.abs(window.scrollY-y)>2)window.scrollTo(0,y);}
 function drawQ(c,q,el,d){
+  if(IA())return drawIA(c,q,el,d);
   if(DEV(st))return drawD(c,q,el,d);
   if(q.multi)return drawM(c,q,el,d);
   const a=st.a[q.key];const opts=el.querySelector(".opts");const exp=el.querySelector(".exp");opts.innerHTML="";
@@ -3613,11 +3641,11 @@ function drawM(c,q,el,d){
 }
 function drawD(c,q,el,d){
   const opts=el.querySelector(".opts");const exp=el.querySelector(".exp");opts.innerHTML="";
-  const r=st.d[q.key]||{};const items=CL(q);const one=items.length===1;
+  const r=SD()[q.key]||{};const items=CL(q);const one=items.length===1;
   if(!r.k){const ta=document.createElement("textarea");ta.className="dta";ta.placeholder="Escribí tu respuesta…";ta.value=r.t||"";
-    ta.oninput=()=>{st.d[q.key]={t:ta.value};save();};opts.appendChild(ta);
+    ta.oninput=()=>{SD()[q.key]={t:ta.value};save();};opts.appendChild(ta);
     const bt=document.createElement("button");bt.type="button";bt.className="tbtn primary";bt.style.alignSelf="flex-start";bt.textContent="Corregir con la lista";
-    bt.onclick=()=>{const y=window.scrollY;st.d[q.key]={t:ta.value,k:1,c:[]};save();drawD(c,q,el,d);if(Math.abs(window.scrollY-y)>2)window.scrollTo(0,y);};
+    bt.onclick=()=>{const y=window.scrollY;SD()[q.key]={t:ta.value,k:1,c:[]};save();drawD(c,q,el,d);if(Math.abs(window.scrollY-y)>2)window.scrollTo(0,y);};
     opts.appendChild(bt);exp.hidden=true;exp.className="exp";return;}
   const an=document.createElement("div");an.className="dans"+((r.t||"").trim()?"":" empty");an.textContent=(r.t||"").trim()||"(sin respuesta escrita)";opts.appendChild(an);
   const hd=document.createElement("div");hd.className="clh";
@@ -3627,13 +3655,13 @@ function drawD(c,q,el,d){
     if(r.f){bt.disabled=true;bt.classList.add(has?"ok":"miss");if(has)bt.classList.add("sel");
       bt.innerHTML=`<span class="k">${i+1}.</span><span>${esc(it)}${has?"":'<span class="fl">faltó</span>'}</span>`;}
     else{if(has)bt.classList.add("sel");bt.setAttribute("aria-pressed",has);bt.innerHTML=`<span class="k">${i+1}.</span><span>${esc(it)}</span>`;
-      bt.onclick=()=>{const y=window.scrollY;has?chk.delete(i):chk.add(i);r.c=[...chk].sort((a,z)=>a-z);st.d[q.key]=r;save();drawD(c,q,el,d);if(Math.abs(window.scrollY-y)>2)window.scrollTo(0,y);};}
+      bt.onclick=()=>{const y=window.scrollY;has?chk.delete(i):chk.add(i);r.c=[...chk].sort((a,z)=>a-z);SD()[q.key]=r;save();drawD(c,q,el,d);if(Math.abs(window.scrollY-y)>2)window.scrollTo(0,y);};}
     opts.appendChild(bt);});
   if(!r.f){const row=document.createElement("div");row.style.cssText="display:flex;gap:8px;flex-wrap:wrap";
     const ok=document.createElement("button");ok.type="button";ok.className="tbtn primary";ok.textContent=`Listo (${chk.size}/${items.length})`;
-    ok.onclick=()=>{const y=window.scrollY;r.f=1;st.d[q.key]=r;save();drawD(c,q,el,d);fx(el);after(c,el,d,y);};
+    ok.onclick=()=>{const y=window.scrollY;r.f=1;SD()[q.key]=r;save();drawD(c,q,el,d);fx(el);after(c,el,d,y);};
     const ed=document.createElement("button");ed.type="button";ed.className="tbtn";ed.textContent="Volver a editar";
-    ed.onclick=()=>{const y=window.scrollY;st.d[q.key]={t:r.t};save();drawD(c,q,el,d);if(Math.abs(window.scrollY-y)>2)window.scrollTo(0,y);};
+    ed.onclick=()=>{const y=window.scrollY;SD()[q.key]={t:r.t};save();drawD(c,q,el,d);if(Math.abs(window.scrollY-y)>2)window.scrollTo(0,y);};
     row.append(ok,ed);opts.appendChild(row);exp.hidden=true;exp.className="exp";return;}
   const k=chk.size,n=items.length;exp.hidden=false;exp.className="exp "+(k===n?"ok":"bad");
   exp.innerHTML=`<b>${k===n?(one?"Incluiste la respuesta esperada.":`Completo: ${n} de ${n} ítems.`):(one?"No incluiste la respuesta esperada.":`${k} de ${n} ítems.`)}</b>${esc(q.exp)}`;
@@ -3653,11 +3681,145 @@ function go(i){st.sec=i;save();show("cases");}
 function toast(t){const e=$("#toast");e.textContent=t;e.classList.add("on");clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove("on"),1800);}
 $("#rnd").onclick=()=>{const pend=CASES.filter(c=>{const x=caseStat(c);return x.ans<x.n;});const pool=pend.length?pend:CASES;const c=pool[Math.floor(Math.random()*pool.length)];
   if(st.pend&&!pend.includes(c)){st.pend=false;} openCase(c.id);toast(SECTIONS[c.s][0]);};
-function bindReset(){$("#reset").onclick=()=>{$("#resetWrap").innerHTML=`<span class="confirm">¿Borrar el progreso de ${DEV(st)?"desarrollo":"multiple choice"}? <button class="tbtn primary" id="ry" type="button">Sí, borrar</button><button class="tbtn" id="rn" type="button">Cancelar</button></span>`;
-  $("#ry").onclick=()=>{if(DEV(st))st.d={};else st.a={};save();restore();show(VIEW,{nopush:true});toast("Progreso borrado");};$("#rn").onclick=restore;};}
+function bindReset(){$("#reset").onclick=()=>{$("#resetWrap").innerHTML=`<span class="confirm">¿Borrar el progreso de ${{mc:"multiple choice",dev:"desarrollo",ia:"con IA"}[st.mode]}? <button class="tbtn primary" id="ry" type="button">Sí, borrar</button><button class="tbtn" id="rn" type="button">Cancelar</button></span>`;
+  $("#ry").onclick=()=>{if(IA())st.i={};else if(DEV(st))st.d={};else st.a={};save();restore();show(VIEW,{nopush:true});toast("Progreso borrado");};$("#rn").onclick=restore;};}
 function restore(){$("#resetWrap").innerHTML=`<button class="tbtn" id="reset" type="button">Borrar progreso</button>`;bindReset();}
 bindReset();
-const MNAME={mc:"Multiple choice",dev:"Desarrollo"};
+// ===== Modo con IA (Gemini) =====
+const IAK="mf_ia_cfg",IADEF="gemini-2.5-flash",GAPI="https://generativelanguage.googleapis.com/v1beta/";
+const IABUSY=new Set();
+function iaCfg(){try{return JSON.parse(localStorage.getItem(IAK)||"{}")||{};}catch(e){return{};}}
+function iaSet(o){try{localStorage.setItem(IAK,JSON.stringify(o));}catch(e){}}
+async function gem(path,body,key,ms){const ctl=new AbortController();const t=setTimeout(()=>ctl.abort(),ms||90000);
+  try{const h={"x-goog-api-key":key};if(body)h["Content-Type"]="application/json";
+    const r=await fetch(GAPI+path,{method:body?"POST":"GET",headers:h,body:body?JSON.stringify(body):undefined,signal:ctl.signal});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok){const e=new Error((j.error&&j.error.message)||("HTTP "+r.status));e.status=r.status;throw e;}
+    return j;}
+  catch(e){if(e.name==="AbortError"){const x=new Error("La IA tardó demasiado en responder. Probá de nuevo.");throw x;}throw e;}
+  finally{clearTimeout(t);}}
+function gemErr(e){if(e&&e.message==="NOKEY")return"Falta cargar la clave de Gemini.";const s=e&&e.status,m=(e&&e.message)||"";
+  if(s===400&&/key/i.test(m))return"La clave de API no es válida. Revisala en «Clave de IA».";
+  if(s===401||s===403)return"La clave no tiene permiso para usar Gemini. Revisala en «Clave de IA».";
+  if(s===429)return"Se alcanzó el límite de uso de la clave. Esperá un rato y probá de nuevo.";
+  if(s===404)return"El modelo elegido no está disponible. Elegí otro en «Clave de IA».";
+  if(s>=500)return"Gemini no está respondiendo bien en este momento. Probá de nuevo en un rato.";
+  if(e instanceof TypeError)return"No se pudo conectar con Gemini. Revisá la conexión a internet.";return m||"Error desconocido.";}
+async function gemText(sys,contents,json){const cfg=iaCfg();if(!cfg.key)throw new Error("NOKEY");
+  const body={systemInstruction:{parts:[{text:sys}]},contents,generationConfig:{temperature:0.2}};if(json)body.generationConfig.responseMimeType="application/json";
+  const j=await gem("models/"+encodeURIComponent(cfg.model||IADEF)+":generateContent",body,cfg.key);
+  const c=j.candidates&&j.candidates[0];const t=c&&c.content&&c.content.parts?c.content.parts.filter(p=>!p.thought&&p.text).map(p=>p.text).join(""):"";
+  if(!t)throw new Error(j.promptFeedback&&j.promptFeedback.blockReason?"Gemini bloqueó la consulta ("+j.promptFeedback.blockReason+").":"La IA no devolvió respuesta"+(c&&c.finishReason?" ("+c.finishReason+")":"")+". Probá de nuevo.");
+  return t;}
+function iaFmt(s){return esc(s).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").replace(/\n/g,"<br>");}
+function iaCtx(c,q){const qs=QS(c);const i=Math.max(0,qs.indexOf(q));let s="CASO: "+c.t+"\n\nHISTORIA CLÍNICA:\n"+c.v;
+  qs.slice(0,i+1).forEach((p,k)=>{if(p.info)s+="\n\nEVOLUCIÓN (antes de la pregunta "+(k+1)+"):\n"+p.info;});
+  const it=CL(q);
+  s+="\n\nPREGUNTA "+(i+1)+" de "+qs.length+" ("+TAGS[q.type]+"): "+q.text;
+  s+="\n\nRESPUESTA ESPERADA"+(it.length>1?" (ítems de la lista de cotejo)":"")+":\n"+it.map((x,k)=>(k+1)+". "+x).join("\n");
+  s+="\n\nEXPLICACIÓN DE LA FUENTE:\n"+q.exp;return s;}
+const IA_EVAL=`Sos docente de Medicina Familiar de la Universidad Nacional del Sur y corregís la respuesta escrita de un estudiante a una pregunta de un caso clínico.
+Reglas:
+- La única referencia válida es la RESPUESTA ESPERADA y la EXPLICACIÓN DE LA FUENTE (Cuadernillo de Medicina Familiar 2026, con guías actualizadas). No uses conocimiento externo para exigir cosas que no están ahí.
+- Un ítem está incluido si el estudiante lo expresa con otras palabras, sinónimos o abreviaturas médicas habituales y el sentido clínico es el mismo. Si lo menciona de forma vaga o con un dato importante equivocado (fármaco, dosis, duración, valor de corte), no está incluido y lo explicás en el comentario.
+- Marcá como error todo lo que contradiga la fuente o sea peligroso. Si agrega algo que no figura en la fuente pero no la contradice, no lo penalices; podés decir que no figura en el cuadernillo.
+- Español rioplatense con voseo, conciso, nivel estudiante, sin emojis.
+Devolvé sólo JSON con esta forma:
+{"items":[{"n":1,"incluido":true,"comentario":"breve"}],"errores":["afirmación equivocada y por qué"],"devolucion":"2 a 4 oraciones: qué estuvo bien, qué faltó y cómo mejorar la respuesta"}
+"items" lleva exactamente un elemento por cada ítem de la respuesta esperada, en el mismo orden. "errores" puede ser una lista vacía.`;
+const IA_CHAT=`Sos docente de Medicina Familiar de la Universidad Nacional del Sur. Ya corregiste la respuesta de un estudiante a una pregunta de un caso clínico y ahora respondés sus dudas.
+- Basate en la fuente del caso (respuesta esperada y explicación del Cuadernillo de Medicina Familiar 2026, con guías actualizadas).
+- Si la duda no está cubierta por esa fuente, empezá con «⚠ No figura en el material del caso.» y, si respondés igual con conocimiento general, aclaralo.
+- Si te pide que le hagas otra pregunta, hacé una sola por vez sobre este caso y esperá su respuesta para corregirla.
+- Español rioplatense con voseo, conciso, nivel estudiante, sin emojis. Podés usar **negrita** para lo clave.`;
+function iaParse(t){t=t.trim().replace(/^```(?:json)?\s*/i,"").replace(/\s*```$/,"");const a=t.indexOf("{"),b=t.lastIndexOf("}");if(a>=0&&b>a)t=t.slice(a,b+1);return JSON.parse(t);}
+async function iaEval(c,q,text){const items=CL(q);
+  const out=await gemText(IA_EVAL,[{role:"user",parts:[{text:iaCtx(c,q)+"\n\nRESPUESTA DEL ESTUDIANTE:\n"+text}]}],true);
+  let j;try{j=iaParse(out);}catch(e){throw new Error("La IA devolvió una corrección con formato inválido. Probá de nuevo.");}
+  const arr=Array.isArray(j.items)?j.items:[];const ok=[],cm=[];
+  items.forEach((_,i)=>{const x=arr.find(y=>+y.n===i+1)||arr[i]||{};if(x.incluido===true||x.incluido==="true")ok.push(i);cm.push(String(x.comentario||"").trim());});
+  return{c:ok,cm,er:(Array.isArray(j.errores)?j.errores:[]).map(String).filter(s=>s.trim()),fb:String(j.devolucion||"").trim()};}
+function drawIA(c,q,el,d){
+  const S=SD();const opts=el.querySelector(".opts");const exp=el.querySelector(".exp");opts.innerHTML="";
+  let x=el.querySelector(".iax");if(!x){x=document.createElement("div");x.className="iax";el.appendChild(x);}x.innerHTML="";x.hidden=true;
+  const r=S[q.key]||{};const items=CL(q);const one=items.length===1;const busy=IABUSY.has(q.key);
+  const keep=fn=>{const y=window.scrollY;fn();if(Math.abs(window.scrollY-y)>2)window.scrollTo(0,y);};
+  if(!r.f){
+    const ta=document.createElement("textarea");ta.className="dta";ta.placeholder="Escribí tu respuesta…";ta.value=r.t||"";ta.disabled=busy;
+    ta.oninput=()=>{S[q.key]={t:ta.value};save();};opts.appendChild(ta);
+    const row=document.createElement("div");row.className="iarow";
+    const bt=document.createElement("button");bt.type="button";bt.className="tbtn primary";bt.disabled=busy;bt.textContent=busy?"Corrigiendo…":"Corregir con IA";
+    row.appendChild(bt);
+    if(busy){const sp=document.createElement("span");sp.className="iaspin";sp.setAttribute("aria-hidden","true");row.appendChild(sp);}
+    if(r.err){const er=document.createElement("span");er.className="iaerr";er.textContent=r.err;row.appendChild(er);}
+    opts.appendChild(row);exp.hidden=true;exp.className="exp";
+    bt.onclick=async()=>{const text=ta.value.trim();
+      if(!iaCfg().key){openIACfg();return;}
+      if(!text){toast("Escribí una respuesta antes de corregir");ta.focus();return;}
+      IABUSY.add(q.key);S[q.key]={t:ta.value};keep(()=>drawIA(c,q,el,d));
+      try{const v=await iaEval(c,q,text);IABUSY.delete(q.key);S[q.key]={t:ta.value,k:1,f:1,c:v.c,cm:v.cm,er:v.er,fb:v.fb,ch:[]};save();
+        const y=window.scrollY;drawIA(c,q,el,d);fx(el);after(c,el,d,y);}
+      catch(e){IABUSY.delete(q.key);S[q.key]={t:ta.value,err:gemErr(e)};keep(()=>drawIA(c,q,el,d));}};
+    return;}
+  const an=document.createElement("div");an.className="dans"+((r.t||"").trim()?"":" empty");an.textContent=(r.t||"").trim()||"(sin respuesta escrita)";opts.appendChild(an);
+  if(r.fb||(r.er&&r.er.length)){const fb=document.createElement("div");fb.className="iafb";
+    fb.innerHTML=`<span class="lbl">Corrección de la IA</span>${r.fb?`<p>${iaFmt(r.fb)}</p>`:""}${r.er&&r.er.length?`<p class="iaerrs"><b>Errores:</b></p><ul>${r.er.map(s=>`<li>${iaFmt(s)}</li>`).join("")}</ul>`:""}`;opts.appendChild(fb);}
+  const hd=document.createElement("div");hd.className="clh";hd.textContent=(one?"Respuesta esperada":"Lista de cotejo")+" · si la IA se equivocó, tocá un ítem para cambiarlo";opts.appendChild(hd);
+  const chk=new Set(r.c||[]);
+  items.forEach((it,i)=>{const bt=document.createElement("button");bt.type="button";const has=chk.has(i);bt.className="opt multi "+(has?"ok sel":"miss");bt.setAttribute("aria-pressed",has);
+    const cm=r.cm&&r.cm[i];bt.innerHTML=`<span class="k">${i+1}.</span><span>${esc(it)}${has?"":'<span class="fl">faltó</span>'}${cm?`<small class="iacm">${esc(cm)}</small>`:""}</span>`;
+    bt.onclick=()=>{const y=window.scrollY;has?chk.delete(i):chk.add(i);r.c=[...chk].sort((a,z)=>a-z);S[q.key]=r;save();drawIA(c,q,el,d);after(c,el,d,y);};
+    opts.appendChild(bt);});
+  const k=chk.size,n=items.length;exp.hidden=false;exp.className="exp "+(k===n?"ok":"bad");
+  exp.innerHTML=`<b>${k===n?(one?"Incluiste la respuesta esperada.":`Completo: ${n} de ${n} ítems.`):(one?"No incluiste la respuesta esperada.":`${k} de ${n} ítems.`)}</b>${esc(q.exp)}`;
+  // repreguntar
+  x.hidden=false;const ch=Array.isArray(r.ch)?r.ch:(r.ch=[]);
+  x.innerHTML=`<span class="lbl">Repreguntar a la IA</span>${ch.length?"":`<p class="iahint">Preguntale por qué, pedile que te explique un ítem o que te haga otra pregunta sobre el caso.</p>`}<div class="iamsgs">${ch.map(m=>`<div class="iam ${m.r==="u"?"u":"a"}">${m.r==="u"?esc(m.t).replace(/\n/g,"<br>"):iaFmt(m.t)}</div>`).join("")}${busy?`<div class="iam a wait"><span class="iaspin"></span> Pensando…</div>`:""}${r.cerr?`<div class="iaerr">${esc(r.cerr)}</div>`:""}</div>
+  <div class="iain"><textarea class="dta iaq" rows="2" placeholder="Escribí tu duda…" ${busy?"disabled":""}>${esc(r.dr||"")}</textarea><div class="iarow"><button type="button" class="tbtn primary iasend" ${busy?"disabled":""}>Preguntar</button><button type="button" class="tbtn iaredo">Volver a responder</button></div></div>`;
+  const qa=x.querySelector(".iaq");qa.oninput=()=>{r.dr=qa.value;S[q.key]=r;saveLocal();};
+  qa.onkeydown=e=>{if(e.key==="Enter"&&(e.ctrlKey||e.metaKey)){e.preventDefault();x.querySelector(".iasend").click();}};
+  x.querySelector(".iaredo").onclick=()=>{keep(()=>{S[q.key]={t:r.t};save();drawIA(c,q,el,d);});const b=d.querySelector(".body");steps(c,b);updFoot(c,b,d);renderMeter();updCounts();};
+  x.querySelector(".iasend").onclick=async()=>{const t=qa.value.trim();if(!t){qa.focus();return;}
+    if(!iaCfg().key){openIACfg();return;}
+    ch.push({r:"u",t});delete r.dr;delete r.cerr;S[q.key]=r;save();IABUSY.add(q.key);keep(()=>drawIA(c,q,el,d));
+    const conv=[{role:"user",parts:[{text:iaCtx(c,q)+"\n\nRESPUESTA DEL ESTUDIANTE:\n"+(r.t||"(sin respuesta)")+"\n\nCORRECCIÓN QUE LE DISTE:\n"+(r.fb||"")+(r.er&&r.er.length?"\nErrores: "+r.er.join("; "):"")+"\nÍtems incluidos: "+(r.c||[]).map(i=>i+1).join(", ")}]},{role:"model",parts:[{text:"Entendido. ¿Qué duda tenés?"}]}]
+      .concat(ch.slice(-20).map(m=>({role:m.r==="u"?"user":"model",parts:[{text:m.t}]})));
+    try{const a=await gemText(IA_CHAT,conv,false);ch.push({r:"a",t:a.trim()});}
+    catch(e){ch.pop();r.dr=t;r.cerr=gemErr(e);}
+    IABUSY.delete(q.key);S[q.key]=r;save();keep(()=>drawIA(c,q,el,d));
+    const ms=x.querySelector(".iamsgs .iam:last-child");if(ms&&!r.cerr)ms.scrollIntoView({block:"nearest"});};
+}
+function iaModelOpts(cfg){const list=cfg.models&&cfg.models.length?cfg.models:[{id:IADEF,n:"Gemini 2.5 Flash"}];const cur=cfg.model||IADEF;
+  const has=list.some(m=>m.id===cur);return(has?list:[{id:cur,n:cur}].concat(list)).map(m=>`<option value="${esc(m.id)}"${m.id===cur?" selected":""}>${esc(m.n)}${m.n!==m.id?" · "+esc(m.id):""}</option>`).join("");}
+function openIACfg(){const m=$("#dmodal");UPDLAST=null;const bx=m.querySelector(".dbox");bx.classList.remove("ubox");bx.style.removeProperty("--c");$("#dmt").textContent="Clave de IA (Gemini)";
+  const cfg=iaCfg();
+  $("#dbody").innerHTML=`<div class="iacfg"><p>El modo «Con IA» usa Gemini, de Google, para corregir tus respuestas escritas con la lista de cotejo de cada pregunta y para contestar tus dudas. Necesitás una clave de API (es gratuita):</p>
+  <ol><li>Entrá a <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio</a> con tu cuenta de Google.</li><li>Tocá «Create API key» y copiá la clave.</li><li>Pegala acá abajo y tocá «Guardar y probar».</li></ol>
+  <label>Clave de API<input type="password" id="iakey" autocomplete="off" spellcheck="false" placeholder="AIza…" value="${esc(cfg.key||"")}"></label>
+  <label>Modelo<select id="iamod">${iaModelOpts(cfg)}</select></label>
+  <div class="iarow"><button type="button" class="tbtn primary" id="iasave">Guardar y probar</button><button type="button" class="tbtn" id="iashow">Mostrar clave</button>${cfg.key?`<button type="button" class="tbtn" id="iadel">Borrar clave</button>`:""}</div>
+  <p class="iamsg" id="iamsg" role="status">${cfg.key?"Clave guardada.":""}</p>
+  <p class="iamut">La clave queda guardada sólo en este navegador: no se sube a tu cuenta ni a la página, así que en otro dispositivo tenés que cargarla de nuevo. Con la clave gratuita, Google puede usar lo que enviás para mejorar sus productos: no escribas datos de pacientes reales.</p></div>`;
+  const msg=$("#iamsg"),inp=$("#iakey");
+  $("#iashow").onclick=e=>{const v=inp.type==="password";inp.type=v?"text":"password";e.target.textContent=v?"Ocultar clave":"Mostrar clave";};
+  if($("#iadel"))$("#iadel").onclick=()=>{iaSet({});toast("Clave borrada");openIACfg();};
+  $("#iasave").onclick=async()=>{const key=inp.value.trim();if(!key){msg.className="iamsg bad";msg.textContent="Pegá la clave primero.";inp.focus();return;}
+    const b=$("#iasave");b.disabled=true;msg.className="iamsg";msg.textContent="Probando la clave…";
+    try{const j=await gem("models?pageSize=1000",null,key,30000);
+      const ms=(j.models||[]).filter(m=>(m.supportedGenerationMethods||[]).includes("generateContent")&&/^models\/gemini/.test(m.name)&&!/(embed|tts|image|audio|live|vision|aqa|robotics|computer|native)/i.test(m.name))
+        .map(m=>({id:m.name.replace(/^models\//,""),n:m.displayName||m.name.replace(/^models\//,"")}));
+      ms.sort((a,z)=>(/flash/.test(z.id)-/flash/.test(a.id))||(/lite/.test(a.id)-/lite/.test(z.id))||z.id.localeCompare(a.id));
+      let model=$("#iamod").value;if(ms.length&&!ms.some(m=>m.id===model))model=(ms.find(m=>m.id===IADEF)||ms.find(m=>/flash/.test(m.id)&&!/lite|preview|exp/.test(m.id))||ms[0]).id;
+      iaSet({key,model,models:ms});
+      msg.textContent="Clave válida. Probando el modelo…";
+      await gemText("Respondé sólo la palabra OK.",[{role:"user",parts:[{text:"Prueba"}]}],false);
+      msg.className="iamsg ok";msg.textContent="Listo: la clave funciona con "+model+".";$("#iamod").innerHTML=iaModelOpts(iaCfg());
+      if(VIEW==="cases")renderCrumbs();}
+    catch(e){msg.className="iamsg bad";msg.textContent=gemErr(e);if(e.status===404){const c2=iaCfg();if(c2.key)$("#iamod").innerHTML=iaModelOpts(c2);}}
+    finally{b.disabled=false;}};
+  $("#iamod").onchange=e=>{const c2=iaCfg();c2.model=e.target.value;iaSet(c2);msg.className="iamsg";msg.textContent=c2.key?"Modelo cambiado. Tocá «Guardar y probar» para verificarlo.":"";};
+  m.hidden=false;document.body.style.overflow="hidden";(cfg.key?$("#dclose"):inp).focus();}
+const MNAME={mc:"Multiple choice",dev:"Desarrollo",ia:"Con IA"};
 const GUIDES=[
  {re:/GINA 2026/,name:"GINA 2026",src:"Global Initiative for Asthma, informe 2026 (≤ 5 años: Strategy Report completo)",items:["Asma: todo tratamiento debe incluir corticoide inhalado; no se trata sólo con salbutamol.","Escalones de tratamiento y opciones preferidas por edad, y medidas de prevención (vacunas) según GINA 2026."]},
  {re:/IDSA 2025/,name:"IDSA 2025",src:"IDSA, guía de ITU complicada 2025",items:["Nueva clasificación: ITU no complicada (limitada a la vejiga) y complicada (más allá de la vejiga, incluye pielonefritis).","Duraciones más cortas (p. ej., 5-7 días de fluoroquinolona o 7 días de otro antibiótico si mejora). Se muestran el esquema del cuadernillo y el de la guía, porque no está claro cuál se toma en el examen."]},
@@ -3783,18 +3945,19 @@ function updRepG(){const a=$("#repG");if(!a)return;let s="General";
   if(VIEW==="secs")s="Pantalla de secciones · "+MNAME[st.mode];else if(VIEW==="cases")s=MNAME[st.mode]+" · Sección "+(st.sec+1)+": "+SECTIONS[st.sec][0];a.href=repURL(s);}
 function statsFor(m,filter){const prev=st.mode;st.mode=m;let done=0,n=0,qa=0,ok=0,it=0,itn=0;
   CASES.filter(filter||(()=>true)).forEach(c=>{const x=caseStat(c);n++;qa+=x.ans;ok+=x.ok;it+=x.it;itn+=x.itn;if(x.ans===x.n)done++;});st.mode=prev;return{done,n,qa,ok,it,itn};}
-function renderHome(){const card=(m,desc)=>{const x=statsFor(m);const pct=m==="dev"?(x.itn?Math.round(x.it/x.itn*100)+"% de ítems":"sin empezar"):(x.qa?Math.round(x.ok/x.qa*100)+"% correctas":"sin empezar");
+function renderHome(){const card=(m,desc)=>{const x=statsFor(m);const pct=m!=="mc"?(x.itn?Math.round(x.it/x.itn*100)+"% de ítems":"sin empezar"):(x.qa?Math.round(x.ok/x.qa*100)+"% correctas":"sin empezar");
     return`<button type="button" class="mcard" data-m="${m}"><h3>${MNAME[m]}</h3><p>${desc}</p><b class="big">${x.done}<small>/${x.n}</small></b><span class="stat"><span>casos terminados</span><span class="mbar"><i style="width:${x.n?x.done/x.n*100:0}%"></i></span><span>${pct}</span></span><span class="tbtn primary go">Entrar</span></button>`;};
-  $("#home").innerHTML=`<div class="vhead"><h2>Elegí el modo</h2><p>Los dos modos usan los mismos casos y secciones; el progreso de cada uno se guarda por separado.</p></div><div class="modes">${card("mc","Leés el caso y elegís entre opciones. Algunas preguntas tienen más de una respuesta correcta.")}${card("dev","Escribís la respuesta y la corregís vos mismo con una lista de cotejo: tildás los ítems que incluiste.")}</div>`;
+  $("#home").innerHTML=`<div class="vhead"><h2>Elegí el modo</h2><p>Los tres modos usan los mismos casos y secciones; el progreso de cada uno se guarda por separado.</p></div><div class="modes">${card("mc","Leés el caso y elegís entre opciones. Algunas preguntas tienen más de una respuesta correcta.")}${card("dev","Escribís la respuesta y la corregís vos mismo con una lista de cotejo: tildás los ítems que incluiste.")}${card("ia","Escribís la respuesta y Gemini la corrige con la lista de cotejo del cuadernillo; después podés repreguntarle tus dudas. Necesita tu clave de API.")}</div>`;
   if(SYNC_OK&&!fbUser&&fb)$("#home").insertAdjacentHTML("beforeend",`<div class="syncnote"><span>Iniciá sesión con tu cuenta de Google para guardar el progreso y seguir en otro dispositivo.</span><button type="button" class="tbtn primary" id="login2">Iniciar sesión con Google</button></div>`);if($("#login2"))$("#login2").onclick=login;
   $("#home").insertAdjacentHTML("beforeend",`<div class="updlink"><span>Contenido del cuadernillo 2026, revisado con guías 2025-2026.</span><button type="button" class="tbtn" id="goUpd">Ver actualizaciones</button></div>`);$("#goUpd").onclick=()=>show("upd");
-  document.querySelectorAll(".mcard").forEach(b=>b.onclick=()=>{st.mode=b.dataset.m;save();show("secs");});}
+  document.querySelectorAll(".mcard").forEach(b=>b.onclick=()=>{st.mode=b.dataset.m;save();show("secs");if(IA()&&!iaCfg().key)openIACfg();});}
 function renderSecs(){
-  $("#secs").innerHTML=`<div class="crumbs"><button type="button" class="back" id="bkH">← Modos</button><span>Modo: <b>${MNAME[st.mode]}</b></span></div><div class="vhead"><h2>Secciones</h2><p>Elegí una sección del cuadernillo.</p></div><div class="secs">${SECTIONS.map(([name,col],i)=>{const x=secStat(i);
+  $("#secs").innerHTML=`<div class="crumbs"><button type="button" class="back" id="bkH">← Modos</button><span>Modo: <b>${MNAME[st.mode]}</b>${IA()?` · <button type="button" class="lnk" id="iaC2">${iaCfg().key?"clave de IA":"cargar clave de IA"}</button>`:""}</span></div><div class="vhead"><h2>Secciones</h2><p>Elegí una sección del cuadernillo.</p></div><div class="secs">${SECTIONS.map(([name,col],i)=>{const x=secStat(i);
     return`<button type="button" class="scard" style="--c:${col}" data-i="${i}"><span class="dot"></span><b>${esc(name)}</b><span class="stat"><span>${x.ans}/${x.n} casos</span><span class="mbar"><i style="width:${x.n?x.ans/x.n*100:0}%"></i></span></span></button>`;}).join("")}</div>`;
-  $("#bkH").onclick=()=>show("home");
+  $("#bkH").onclick=()=>show("home");if($("#iaC2"))$("#iaC2").onclick=openIACfg;
   document.querySelectorAll(".scard").forEach(b=>b.onclick=()=>{st.sec=+b.dataset.i;save();show("cases");});}
-function renderCrumbs(){$("#crumbs").innerHTML=`<button type="button" class="back" id="bkS">← Secciones</button><span>Modo: <b>${MNAME[st.mode]}</b> · <button type="button" class="lnk" id="chM">cambiar modo</button></span>`;
+function renderCrumbs(){$("#crumbs").innerHTML=`<button type="button" class="back" id="bkS">← Secciones</button><span>Modo: <b>${MNAME[st.mode]}</b> · <button type="button" class="lnk" id="chM">cambiar modo</button>${IA()?` · <button type="button" class="lnk" id="iaC">${iaCfg().key?"clave de IA":"cargar clave de IA"}</button>`:""}</span>`;
+  if($("#iaC"))$("#iaC").onclick=openIACfg;
   $("#bkS").onclick=()=>show("secs");$("#chM").onclick=()=>show("home");}
 const RS=document.documentElement.style;
 let CURCOL=null;
@@ -3846,18 +4009,18 @@ async function initSync(){if(!SYNC_OK)return;sstate="load";renderAcct();
 function login(){if(!fb)return;const p=new fb.auth.GoogleAuthProvider();p.setCustomParameters({prompt:"select_account"});
   fb.auth().signInWithPopup(p).catch(e=>{const c=e&&e.code||"";if(/popup-blocked|operation-not-supported|web-storage-unsupported/.test(c))fb.auth().signInWithRedirect(p);else if(!/popup-closed|cancelled-popup/.test(c))toast("No se pudo iniciar sesión");});}
 async function logout(){if(!fb)return;clearTimeout(syncT);if(st.dirty)await push();await fb.auth().signOut();
-  st.a={};st.d={};delete st.uid;st.dirty=false;saveLocal();show(VIEW==="cases"?"secs":VIEW,{nopush:true});toast("Sesión cerrada: tu progreso queda guardado en tu cuenta");}
+  st.a={};st.d={};st.i={};delete st.uid;st.dirty=false;saveLocal();show(VIEW==="cases"?"secs":VIEW,{nopush:true});toast("Sesión cerrada: tu progreso queda guardado en tu cuenta");}
 function ref(){return db.collection("progreso").doc(fbUser.uid);}
 async function pull(){try{const snap=await ref().get();const r=snap.exists?snap.data():null;
-    if(r){const rem={a:r.a||{},d:r.d||{},rv:Array.isArray(r.rv)?r.rv:[]};applyRedo(rem);
-      if(st.uid===fbUser.uid&&!st.dirty){st.a=rem.a;st.d=rem.d;}
-      else{st.a=Object.assign({},rem.a,st.a);st.d=Object.assign({},rem.d,st.d);}
+    if(r){const rem={a:r.a||{},d:r.d||{},i:r.i||{},rv:Array.isArray(r.rv)?r.rv:[]};applyRedo(rem);
+      if(st.uid===fbUser.uid&&!st.dirty){st.a=rem.a;st.d=rem.d;st.i=rem.i;}
+      else{st.a=Object.assign({},rem.a,st.a);st.d=Object.assign({},rem.d,st.d);st.i=Object.assign({},rem.i,st.i);}
       st.rv=[...new Set([...rem.rv,...st.rv])];}
     st.uid=fbUser.uid;sanitize();saveLocal();await push();
     show(VIEW,{nopush:true,keepScroll:true});
   }catch(e){sstate="error";renderAcct();}}
 function push(){if(!fbUser||!db)return Promise.resolve();clearTimeout(syncT);st.dirty=true;saveLocal();
-  return ref().set({a:st.a,d:st.d,rv:st.rv,updated:Date.now()}).then(()=>{st.dirty=false;saveLocal();sstate="ok";renderAcct();}).catch(()=>{sstate="error";renderAcct();});}
+  return ref().set({a:st.a,d:st.d,i:st.i,rv:st.rv,updated:Date.now()}).then(()=>{st.dirty=false;saveLocal();sstate="ok";renderAcct();}).catch(()=>{sstate="error";renderAcct();});}
 function syncSoon(){if(!fbUser||!db)return;st.dirty=true;saveLocal();sstate="pending";renderAcct();clearTimeout(syncT);syncT=setTimeout(push,1500);}
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden"&&fbUser&&st.dirty)push();});
 try{history.replaceState({v:"home",sec:st.sec,mode:st.mode},"");}catch(e){}
