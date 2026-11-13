@@ -208,6 +208,7 @@ figcaption{font-size:.8rem;color:var(--muted);margin-top:6px}
 .iacfg input,.iacfg select{font:inherit;font-weight:400;font-size:.95rem;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--fg)}
 .iamsg{min-height:1.2em;font-size:.9rem;color:var(--muted)}.iamsg.ok{color:var(--ok)}.iamsg.bad{color:var(--bad)}
 .iamut{font-size:.82rem;color:var(--muted)}
+.iacfg label.iachk{flex-direction:row;align-items:center;gap:8px;font-weight:400}
 .modes>.mcard:nth-child(3){animation-delay:0.2s}
 @media (max-width:640px){.iax{margin-left:0}}
 .clh{font-size:.82rem;font-weight:600;color:var(--muted);margin-top:4px}
@@ -3707,7 +3708,10 @@ function gemErr(e){if(e&&e.message==="NOKEY")return"Falta cargar la clave de Gem
   if(e instanceof TypeError)return"No se pudo conectar con Gemini. Revisá la conexión a internet.";return m||"Error desconocido.";}
 async function gemText(sys,contents,json){const cfg=iaCfg();if(!cfg.key)throw new Error("NOKEY");
   const body={systemInstruction:{parts:[{text:sys}]},contents,generationConfig:{temperature:0.2}};if(json)body.generationConfig.responseMimeType="application/json";
-  const j=await gem("models/"+encodeURIComponent(cfg.model||IADEF)+":generateContent",body,cfg.key);
+  const tries=[cfg.model||IADEF].concat((cfg.models||[]).filter(m=>m.ok&&m.id!==cfg.model).map(m=>m.id)).slice(0,3);let j,err;
+  for(const mod of tries){try{j=await gem("models/"+encodeURIComponent(mod)+":generateContent",body,cfg.key);if(mod!==tries[0])toast("Se usó "+mod+" porque "+tries[0]+" no respondió");break;}
+    catch(e){err=e;if(![404,429,500,503].includes(e.status))throw e;}}
+  if(!j)throw err;
   const c=j.candidates&&j.candidates[0];const t=c&&c.content&&c.content.parts?c.content.parts.filter(p=>!p.thought&&p.text).map(p=>p.text).join(""):"";
   if(!t)throw new Error(j.promptFeedback&&j.promptFeedback.blockReason?"Gemini bloqueó la consulta ("+j.promptFeedback.blockReason+").":"La IA no devolvió respuesta"+(c&&c.finishReason?" ("+c.finishReason+")":"")+". Probá de nuevo.");
   return t;}
@@ -3789,14 +3793,30 @@ function drawIA(c,q,el,d){
     IABUSY.delete(q.key);S[q.key]=r;save();keep(()=>drawIA(c,q,el,d));
     const ms=x.querySelector(".iamsgs .iam:last-child");if(ms&&!r.cerr)ms.scrollIntoView({block:"nearest"});};
 }
-function iaModelOpts(cfg){const list=cfg.models&&cfg.models.length?cfg.models:[{id:IADEF,n:"Gemini 2.5 Flash"}];const cur=cfg.model||IADEF;
-  const has=list.some(m=>m.id===cur);return(has?list:[{id:cur,n:cur}].concat(list)).map(m=>`<option value="${esc(m.id)}"${m.id===cur?" selected":""}>${esc(m.n)}${m.n!==m.id?" · "+esc(m.id):""}</option>`).join("");}
+// lista corta: sólo modelos estables de texto, en orden de preferencia
+function iaShort(ids){const out=[],add=(id,n)=>{if(id&&ids.includes(id)&&!out.some(m=>m.id===id))out.push({id,n});};
+  const top=re=>ids.map(id=>{const m=id.match(re);return m?{id,v:parseFloat(m[1])}:null;}).filter(Boolean).sort((a,z)=>z.v-a.v)[0];
+  const fl=top(/^gemini-(\d+(?:\.\d+)?)-flash$/),lt=top(/^gemini-(\d+(?:\.\d+)?)-flash-lite$/);
+  add("gemini-flash-latest","Gemini Flash (siempre la última versión)");
+  if(fl)add(fl.id,"Gemini "+fl.v+" Flash");
+  add("gemini-2.5-flash","Gemini 2.5 Flash (respaldo)");
+  if(ids.includes("gemini-flash-lite-latest"))add("gemini-flash-lite-latest","Gemini Flash-Lite: más rápido y con más cupo, corrige algo peor");
+  else if(lt)add(lt.id,"Gemini "+lt.v+" Flash-Lite: más rápido y con más cupo, corrige algo peor");
+  return out;}
+function iaModelOpts(cfg,all){const cur=cfg.model||IADEF;let list;
+  if(all&&cfg.all&&cfg.all.length)list=cfg.all.map(id=>({id,n:id,ok:true}));
+  else{list=(cfg.models||[]).filter(m=>m.ok);if(!list.length)list=[{id:IADEF,n:"Gemini 2.5 Flash",ok:true}];}
+  if(!list.some(m=>m.id===cur))list=[{id:cur,n:cur+" (elegido antes)"}].concat(list);
+  const rec=(cfg.models||[]).find(m=>m.ok);
+  return list.map(m=>`<option value="${esc(m.id)}"${m.id===cur?" selected":""}>${esc(m.n)}${rec&&m.id===rec.id&&!all?" · recomendado":""}</option>`).join("");}
 function openIACfg(){const m=$("#dmodal");UPDLAST=null;const bx=m.querySelector(".dbox");bx.classList.remove("ubox");bx.style.removeProperty("--c");$("#dmt").textContent="Clave de IA (Gemini)";
   const cfg=iaCfg();
   $("#dbody").innerHTML=`<div class="iacfg"><p>El modo «Con IA» usa Gemini, de Google, para corregir tus respuestas escritas con la lista de cotejo de cada pregunta y para contestar tus dudas. Necesitás una clave de API (es gratuita):</p>
   <ol><li>Entrá a <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio</a> con tu cuenta de Google.</li><li>Tocá «Create API key» y copiá la clave.</li><li>Pegala acá abajo y tocá «Guardar y probar».</li></ol>
   <label>Clave de API<input type="password" id="iakey" autocomplete="off" spellcheck="false" placeholder="AIza…" value="${esc(cfg.key||"")}"></label>
   <label>Modelo<select id="iamod">${iaModelOpts(cfg)}</select></label>
+  <p class="iamut" id="iamhint">${cfg.models&&cfg.models.length?"La lista muestra sólo los modelos que respondieron bien con tu clave. Dejá el recomendado salvo que se agote el cupo.":"Al tocar «Guardar y probar», la página prueba los modelos adecuados y deja elegido el que funcione."}</p>
+  <label class="iachk"><input type="checkbox" id="iaall"> Mostrar todos los modelos (sin probar)</label>
   <div class="iarow"><button type="button" class="tbtn primary" id="iasave">Guardar y probar</button><button type="button" class="tbtn" id="iashow">Mostrar clave</button>${cfg.key?`<button type="button" class="tbtn" id="iadel">Borrar clave</button>`:""}</div>
   <p class="iamsg" id="iamsg" role="status">${cfg.key?"Clave guardada.":""}</p>
   <p class="iamut">La clave queda guardada sólo en este navegador: no se sube a tu cuenta ni a la página, así que en otro dispositivo tenés que cargarla de nuevo. Con la clave gratuita, Google puede usar lo que enviás para mejorar sus productos: no escribas datos de pacientes reales.</p></div>`;
@@ -3808,15 +3828,22 @@ function openIACfg(){const m=$("#dmodal");UPDLAST=null;const bx=m.querySelector(
     try{const j=await gem("models?pageSize=1000",null,key,30000);
       const ms=(j.models||[]).filter(m=>(m.supportedGenerationMethods||[]).includes("generateContent")&&/^models\/gemini/.test(m.name)&&!/(embed|tts|image|audio|live|vision|aqa|robotics|computer|native)/i.test(m.name))
         .map(m=>({id:m.name.replace(/^models\//,""),n:m.displayName||m.name.replace(/^models\//,"")}));
-      ms.sort((a,z)=>(/flash/.test(z.id)-/flash/.test(a.id))||(/lite/.test(a.id)-/lite/.test(z.id))||z.id.localeCompare(a.id));
-      let model=$("#iamod").value;if(ms.length&&!ms.some(m=>m.id===model))model=(ms.find(m=>m.id===IADEF)||ms.find(m=>/flash/.test(m.id)&&!/lite|preview|exp/.test(m.id))||ms[0]).id;
-      iaSet({key,model,models:ms});
-      msg.textContent="Clave válida. Probando el modelo…";
-      await gemText("Respondé sólo la palabra OK.",[{role:"user",parts:[{text:"Prueba"}]}],false);
-      msg.className="iamsg ok";msg.textContent="Listo: la clave funciona con "+model+".";$("#iamod").innerHTML=iaModelOpts(iaCfg());
-      if(VIEW==="cases")renderCrumbs();}
+      const ids=ms.map(m=>m.id).sort();const short=iaShort(ids);if(!short.length&&ids.includes(IADEF))short.push({id:IADEF,n:"Gemini 2.5 Flash"});
+      if(!short.length)throw new Error("La clave funciona, pero no encontré un modelo Flash estable. Marcá «Mostrar todos los modelos» y elegí uno a mano.");
+      let last=null;
+      for(let i=0;i<short.length;i++){const m=short[i];msg.textContent=`Clave válida. Probando modelos (${i+1}/${short.length}): ${m.id}…`;
+        try{await gem("models/"+encodeURIComponent(m.id)+":generateContent",{contents:[{role:"user",parts:[{text:"Respondé sólo OK."}]}]},key,30000);m.ok=true;}catch(e){m.ok=false;last=e;}}
+      const okm=short.filter(m=>m.ok);const prev=iaCfg().model;
+      const model=okm.some(m=>m.id===prev)&&prev!==IADEF?prev:(okm[0]||{}).id;
+      iaSet({key,model:model||short[0].id,models:short,all:ids});
+      $("#iamod").innerHTML=iaModelOpts(iaCfg());$("#iaall").checked=false;
+      if(!okm.length)throw last||new Error("Ningún modelo respondió.");
+      $("#iamhint").textContent="La lista muestra sólo los modelos que respondieron bien con tu clave. Dejá el recomendado salvo que se agote el cupo.";
+      msg.className="iamsg ok";msg.textContent=`Listo: funcionan ${okm.length} de ${short.length} modelos. Quedó elegido ${model}.`;
+      if(VIEW==="cases")renderCrumbs();else if(VIEW==="secs")renderSecs();}
     catch(e){msg.className="iamsg bad";msg.textContent=gemErr(e);if(e.status===404){const c2=iaCfg();if(c2.key)$("#iamod").innerHTML=iaModelOpts(c2);}}
     finally{b.disabled=false;}};
+  $("#iaall").onchange=e=>{$("#iamod").innerHTML=iaModelOpts(iaCfg(),e.target.checked);};
   $("#iamod").onchange=e=>{const c2=iaCfg();c2.model=e.target.value;iaSet(c2);msg.className="iamsg";msg.textContent=c2.key?"Modelo cambiado. Tocá «Guardar y probar» para verificarlo.":"";};
   m.hidden=false;document.body.style.overflow="hidden";(cfg.key?$("#dclose"):inp).focus();}
 const MNAME={mc:"Multiple choice",dev:"Desarrollo",ia:"Con IA"};
